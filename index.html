@@ -1528,7 +1528,8 @@ const ACC={a_tiara:['Diadema',0,[300,150],120,'cap'],a_flowers:['Corona de flors
  a_bag:['Bossa',3,[392,470],95,'ma'],a_backpack:['Motxilla',4,[205,420],110,'esq'],a_wand:['Vareta màgica',6,[405,440],105,'ma'],
  a_bwings:['Ales de papallona',8,[300,360],400,'ales'],a_awings:['Ales d’àngel',10,[300,350],380,'ales']};
 const PETS=[['p_cat','Gateta',4],['p_dog','Gosset',4],['p_bunny','Conillet',5],['p_fox','Guineu',6],['p_panda','Panda',6],['p_unicorn','Unicorn',10],['p_dragon','Dragonet',12]];
-const BGS={boutique:['Botiga','#ffe3f1','#e9dcff'],platja:['Platja','#bfe9ff','#fff1c9'],festa:['Festa','#e5d4ff','#ffd3ea'],hivern:['Neu','#e8f4ff','#ffffff'],jardi:['Jardí','#d9f5d2','#fff6c9'],passarela:['Passarel·la','#ffd3ea','#b9a0f5']};
+const BGS={boutique:['Botiga','#ffe3f1','#e9dcff'],platja:['Platja','#bfe9ff','#fff1c9'],festa:['Festa','#e5d4ff','#ffd3ea'],hivern:['Neu','#e8f4ff','#ffffff'],jardi:['Jardí','#d9f5d2','#fff6c9'],passarela:['Passarel·la','#ffd3ea','#b9a0f5'],camerino:['Camerino','#ffe3f1','#ffd3ea']};
+const BGIMG={boutique:'bg_boutique',festa:'bg_festa',hivern:'bg_hivern',jardi:'bg_jardi',passarela:'bg_passarela',camerino:'bg_camerino'};
 const RETOS=[
  {t:'Festa d’Estiu',d:'Look d’estiu, fons de platja i un barret o ulleres.',c:[()=>tags().includes('estiu'),()=>D.bg==='platja',()=>D.acc.a_hat||D.acc.a_heartgl||D.acc.a_roundgl],p:15},
  {t:'Ball de Princeses',d:'Look de festa, una diadema i fons de festa.',c:[()=>tags().includes('festa'),()=>D.acc.a_tiara||D.acc.a_flowers,()=>D.bg==='festa'],p:15},
@@ -1545,6 +1546,7 @@ function sfx(f){try{f();}catch(e){}}
 
 /* ---- escenari ---- */
 function drawBg(){const b=BGS[D.bg]||BGS.boutique,g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,b[1]);g.addColorStop(1,b[2]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  const bk=BGIMG[D.bg];if(bk){const bi=img(bk);if(bi.complete&&bi.naturalWidth){const sc=Math.max(W/bi.naturalWidth,H/bi.naturalHeight),bw=bi.naturalWidth*sc,bh=bi.naturalHeight*sc;ctx.drawImage(bi,(W-bw)/2,(H-bh),bw,bh);}ctx.globalAlpha=.5;for(let i=0;i<14;i++){const x=(i*137)%W,y=(i*89+t*12*(1+i%3))%H;ctx.fillStyle=['#fff','#ffd75e'][i%2];ctx.beginPath();ctx.arc(x,y,1.5+(i%3),0,7);ctx.fill();}ctx.globalAlpha=1;return;}
   ctx.globalAlpha=.6;for(let i=0;i<26;i++){const x=(i*137)%W,y=(i*89+t*12*(1+i%3))%H;ctx.fillStyle=['#fff','#ffd75e','#ff9ec4','#b48cff'][i%4];ctx.beginPath();ctx.arc(x,y,2+(i%3),0,7);ctx.fill();}ctx.globalAlpha=1;
   const deco={boutique:[['d_flowerarch',90,420,260],['d_balloons',510,420,220]],festa:[['d_balloons',100,400,260],['d_balloons',500,400,260]],jardi:[['d_flowerarch',300,380,420],['f_plant',80,640,110],['f_plant',520,640,110]],
     platja:[['k3_star',90,110,50]],hivern:[['k3_star',520,100,40]],passarela:[['d_piano',90,560,170]]}[D.bg]||[];
@@ -1606,7 +1608,7 @@ function render(){
   if(tab==='looks')h=LOOKS.map(([k,n,c])=>card(k,n,c,D.look===k,c===0||D.own[k],D.look===k?'Posat':'Provar')).join('');
   if(tab==='acc')h=Object.entries(ACC).map(([k,a])=>card(k,a[0],a[1],!!D.acc[k],a[1]===0||D.own[k])).join('');
   if(tab==='pets')h=PETS.map(([k,n,c])=>card(k,n,c,D.pet===k,D.own[k])).join('');
-  if(tab==='bg')h=Object.entries(BGS).map(([k,b])=>`<div class="d2it${D.bg===k?' on':''}" data-bg="${k}"><div class="d2pic" style="background:linear-gradient(${b[1]},${b[2]})"></div><b>${b[0]}</b><span class="d2ok">${D.bg===k?'Actiu':'Posar'}</span></div>`).join('');
+  if(tab==='bg')h=Object.entries(BGS).map(([k,b])=>`<div class="d2it${D.bg===k?' on':''}" data-bg="${k}"><div class="d2pic" style="background:${BGIMG[k]?`url(img/dress/${BGIMG[k]}.webp) center/cover`:`linear-gradient(${b[1]},${b[2]})`}"></div><b>${b[0]}</b><span class="d2ok">${D.bg===k?'Actiu':'Posar'}</span></div>`).join('');
   $q('#d2grid').innerHTML=h;
   const r=RETOS[D.reto%RETOS.length],n=r.c.filter(f=>f()).length;
   $q('#d2reto').innerHTML=`<div class="d2rh"><span>🏆</span><div><b>Repte: ${r.t}</b><small>${r.d}</small></div><span class="d2pc">${Math.round(n/r.c.length*100)}%</span></div><div class="d2bar"><i style="width:${n/r.c.length*100}%"></i></div><div class="d2rf">${n} de ${r.c.length} llestos · Premi: +${r.p} ⭐</div>`;
