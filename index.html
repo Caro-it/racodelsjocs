@@ -1520,8 +1520,8 @@ const KEY='vestidor3d_v1';
 const old=(()=>{try{return JSON.parse(localStorage.getItem('vestidorProgreso_v1'))||{};}catch(e){return {};}})();
 const D=(()=>{try{return Object.assign({stars:5+(old.stars||0),own:{},look:'base',acc:{},pet:'',bg:'boutique',reto:0,album:[],done:{}},JSON.parse(localStorage.getItem(KEY))||{});}catch(e){return {stars:5,own:{},look:'base',acc:{},pet:'',bg:'boutique',reto:0,album:[],done:{}};}})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){try{D.album=D.album.slice(-4);localStorage.setItem(KEY,JSON.stringify(D));}catch(e2){}}};
-const LOOKS=[['base','Bàsic',0,[]],['l_summer','Estiu',0,['estiu']],['l_party','Festa',0,['festa']],['l_school','Escola',0,[]],['l_sport','Esport',3,[]],['l_pyjama','Pijama',0,['nit']],
- ['l_chef','Xef',4,[]],['l_beach','Platja',5,['estiu']],['l_winter','Hivern',6,['neu']],['l_ballet','Ballet',6,['festa']],['l_kimono','Quimono',8,[]],['l_rock','Rock',8,['rock']],
+const LOOKS=[['base','Bàsic',0,[]],['l_pyjama','Pijama',0,['nit']],
+ ['l_chef','Xef',0,[]],['l_beach','Platja',5,['estiu']],['l_winter','Hivern',6,['neu']],['l_ballet','Ballet',6,['festa']],['l_kimono','Quimono',8,[]],['l_rock','Rock',8,['rock']],
  ['l_cowgirl','Vaquera',8,[]],['l_fairy','Fada',10,['magia']],['l_mermaid','Sirena',12,['magia']],['l_astro','Astronauta',12,[]],['l_princess','Princesa',15,['festa','princesa']]];
 const ACC={a_tiara:['Diadema',0,[300,150],120,'cap'],a_flowers:['Corona de flors',0,[300,152],150,'cap'],a_catears:['Orelles de gat',3,[300,140],160,'cap'],a_hat:['Barret',4,[300,140],210,'cap'],
  a_heartgl:['Ulleres de cor',0,[300,248],120,'ulls'],a_roundgl:['Ulleres rodones',3,[300,248],115,'ulls'],a_scarf:['Bufanda',4,[300,350],120,'coll'],
@@ -1644,7 +1644,7 @@ root.addEventListener('click',e=>{
     const f=$q('#d2flash');f.style.opacity=1;setTimeout(()=>f.style.opacity=0,150);sfx(()=>ding());}catch(er){modal('<h2>Ups!</h2><p>No s’ha pogut fer la foto.</p><button class="d2btn" data-x="1">D’acord</button>');}}
   if(act==='album')modal(`<h2>📖 El meu àlbum</h2>${D.album.length?`<div class="d2alb">${D.album.slice().reverse().map(u=>`<img src="${u}" alt="">`).join('')}</div>`:'<p>Encara no hi ha fotos. Toca 📸 per fer-ne!</p>'}<button class="d2btn" data-x="1">Tancar</button>`);
 });
-function open(){if(!D.fit2){D.fit2=1;const i=img(D.look);i.complete?refit():i.addEventListener("load",refit,{once:true});}render();}
+function open(){if(!LOOKS.some(l=>l[0]===D.look)){D.look='base';D.fit2=0;}if(!D.fit2){D.fit2=1;const i=img(D.look);i.complete?refit():i.addEventListener("load",refit,{once:true});}render();}
 function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(current==='dress2'){upd(dt);draw();}requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
 return {open,_D:D,_render:render};
