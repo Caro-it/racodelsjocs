@@ -1781,7 +1781,7 @@ const ORN=[['or_red',3],['or_gold',3],['or_pink',4],['or_mint',4],['or_lilac',4]
 const TREE={x:300,y:400,h:560};let tmask=null;
 function treeKey(){return ok('tree')?'tree':'pine';}
 function mask(){if(tmask||!ok('tree'))return tmask;const i=IM.tree,c=document.createElement('canvas');c.width=i.naturalWidth;c.height=i.naturalHeight;const x=c.getContext('2d');x.drawImage(i,0,0);try{tmask={w:c.width,h:c.height,d:x.getImageData(0,0,c.width,c.height).data};}catch(e){tmask=null;}return tmask;}let drag=null,tray=0;
-function inTree(x,y){const m=mask();if(m){const k='tree',w=wOf(k,TREE.h),ix=Math.floor((x-(TREE.x-w/2))/w*m.w),iy=Math.floor((y-(TREE.y-TREE.h/2))/TREE.h*m.h);if(ix<0||iy<0||ix>=m.w||iy>=m.h||iy>m.h*.72)return false;return m.d[(iy*m.w+ix)*4+3]>120;}const top=TREE.y-TREE.h*.46,bot=TREE.y+TREE.h*.3;if(y<top||y>bot)return false;const half=(y-top)/(bot-top)*175+12;return Math.abs(x-TREE.x)<half;}
+function inTree(x,y){const m=mask();if(m){const k='tree',w=wOf(k,TREE.h),ix=Math.floor((x-(TREE.x-w/2))/w*m.w),iy=Math.floor((y-(TREE.y-TREE.h/2))/TREE.h*m.h);if(ix<0||iy<0||ix>=m.w||iy>=m.h||iy>m.h*.8)return false;return m.d[(iy*m.w+ix)*4+3]>120;}const top=TREE.y-TREE.h*.46,bot=TREE.y+TREE.h*.3;if(y<top||y>bot)return false;const half=(y-top)/(bot-top)*175+12;return Math.abs(x-TREE.x)<half;}
 function trayPos(i){return [48+(i%6)*101,760+Math.floor(i/6)*74];}
 function drawDeco(){
   const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#ffe9f2');g.addColorStop(1,'#f3e4ff');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
