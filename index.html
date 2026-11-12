@@ -699,6 +699,8 @@ load();applyFloor();
 const P={x:300,y:600,dir:1,anim:0,moving:false};
 const pet={x:260,y:606,dir:1,anim:0,mv:false,hop:0};
 const BOTHOME=[[470,580],[438,580],[502,580]];
+const ELP=()=>[ELV.x-16,ELV.y+24],HALL=[[500,592]];
+function liftFx(x,y){if(Math.random()<.5)ding();for(let i=0;i<6;i++)parts.push({k:'s',x:x+rand(-10,10),y:y-30,vx:rand(-40,40),vy:rand(-80,-20),life:.6,t:0});}
 const bots=BOTHOME.map(([x,y])=>({x,y,path:[],room:null,target:null,dir:1,anim:Math.random()*3,moving:false}));
 let elevIn=false;
 let recepT=-9,hopT=-9,guests=[],spawnT=1.5,checkT=0,payAcc=0,collAcc=0,saveT=0,time=0,resetArm=0;
@@ -801,7 +803,8 @@ function update(dt){
     checkT+=dt/(atDesk?0.7:1.6);
     if(checkT>=1){
       checkT=0;front.state='toRoom';front.room=free;free.state='reserved';
-      front.path=[[160,760],[160,578]].concat(doorPath(free),[[free.x,free.y-50]]);
+      if(free.f===0)front.path=[[160,760],[160,578]].concat(doorPath(free),[[free.x,free.y-50]]);
+      else{front.state='toLift';front.path=[[160,760],ELP()];front.after=HALL.concat(doorPath(free),[[free.x,free.y-50]]);}
       let pay=5+ups[3].level*3+ups[4].level*2+free.f*4;if(front.vip)pay*=2;
       recepT=time;S.pile+=pay;floaty((front.vip?'👑 VIP +':'+')+pay,PILE.x,PILE.y-40,'#ffb800',26);ding();save();
     }
@@ -809,7 +812,9 @@ function update(dt){
 
   for(const g of guests){
     g.anim+=dt;
-    if(g.state==='toRoom'){if(walk(g,115,dt)){g.state='sleep';g.t=rand(7,10);g.room.state='occupied';
+    if(g.state==='toLift'||g.state==='toLift2'){if(walk(g,115,dt)){liftFx(g.x,g.y);g.lt=1;g.state=g.state==='toLift'?'lift':'lift2';}}
+    else if(g.state==='lift'||g.state==='lift2'){g.lt-=dt;if(g.lt<=0){const [ex,ey]=ELP();g.x=ex;g.y=ey;liftFx(ex,ey);if(g.state==='lift'){g.state='toRoom';g.path=g.after;}else{g.state='leave';g.path=[[300,870],[230,960]];}}}
+    else if(g.state==='toRoom'){if(walk(g,115,dt)){g.state='sleep';g.t=rand(7,10);g.room.state='occupied';
       if(g.vip||Math.random()<.5){g.wish=pick(WISHES);g.wp=0;}}}
     else if(g.state==='sleep'){g.moving=false;g.t-=dt;
       const r=g.room;
@@ -819,7 +824,8 @@ function update(dt){
         coinFly(r.x,r.y-60,P.x,P.y-30);ding();g.wish=null;save();}}
       if(g.t<=0){
       r.state='dirty';r.clean=0;g.state='leave';g.wish=null;
-      g.path=doorPath(r).slice().reverse().concat([[160,578],[160,870],[230,960]]);
+      if(r.f===0)g.path=doorPath(r).slice().reverse().concat([[160,578],[160,870],[230,960]]);
+      else{g.state='toLift2';g.path=doorPath(r).slice().reverse().concat(HALL,[ELP()]);}
       if(r.f===view)floaty('❤️',r.x,r.y-80,'#fff',26);}}
     else if(g.state==='leave'){if(walk(g,125,dt))g.dead=true;}
   }
@@ -873,12 +879,16 @@ function update(dt){
   // netejadors
   const cl=ups[1].level,nB=cl>=4?3:cl>=3?2:cl>=1?1:0,bsp=cl>=5?190:cl>=2?140:95,bct=cl>=5?.9:cl>=2?1.5:2.8;
   bots.forEach((bot,bi)=>{bot.anim+=dt;if(bi>=nB)return;
+    if(bot.fl===undefined)bot.fl=0;
+    if(bot.mode==='lift'){bot.lt-=dt;if(bot.lt<=0){const [ex,ey]=ELP();bot.x=ex;bot.y=ey;bot.fl=bot.target?bot.target.f:0;liftFx(ex,ey);bot.mode='go';bot.path=HALL.concat(bot.target?doorPath(bot.target):[]);}return;}
     if(!bot.target){
-      const d=allR().find(r=>r.state==='dirty'&&!r.claimed);
-      if(d){d.claimed=true;bot.target=d;bot.path=(bot.room?doorPath(bot.room).slice().reverse():[]).concat(doorPath(d));bot.room=null;}
-      else if(bot.room&&!bot.path.length){bot.path=doorPath(bot.room).slice().reverse().concat([BOTHOME[bi]]);bot.room=null;}
+      const d=allR().filter(r=>r.state==='dirty'&&!r.claimed).sort((a,b)=>Math.abs(a.f-bot.fl)-Math.abs(b.f-bot.fl))[0];
+      if(d){d.claimed=true;bot.target=d;const out=bot.room?doorPath(bot.room).slice().reverse():[];bot.room=null;
+        if(d.f===bot.fl){bot.mode='go';bot.path=out.concat(doorPath(d));}
+        else{bot.mode='toLift';bot.path=out.concat(bot.fl===0&&!out.length?[]:HALL,[ELP()]);}}
     }
     const arrived=walk(bot,bsp,dt);
+    if(arrived&&bot.mode==='toLift'){liftFx(bot.x,bot.y);bot.mode='lift';bot.lt=1;return;}
     if(arrived&&bot.target){
       const r=bot.target;bot.room=r;
       if(r.state==='dirty'){r.clean+=dt/bct;if(r.f===view&&Math.random()<dt*5)sparkle(r.x+rand(-30,30),r.y-30);if(r.clean>=1)finishClean(r);}
@@ -1274,10 +1284,10 @@ function draw(){
     zone(u.x,u.y,44,u.paid,u.prices[u.level],u.icon,u.name+(u.prices.length>1?' '+(u.level+1):''),u.spr);
   }
   const list=[];
-  guests.forEach(g=>{if(g.state!=='sleep'&&!(g.y<574&&g.room&&g.room.f!==view))list.push({y:g.y,f:()=>chara(g.k,g.x,g.y,{mv:g.moving||g.state==='queue',anim:g.anim,dir:g.dir,suitcase:true,col:g.col,crown:g.vip})});});
+  guests.forEach(g=>{if(g.state!=='sleep'&&g.state!=='lift'&&g.state!=='lift2'&&!(g.y<574&&g.room&&g.room.f!==view))list.push({y:g.y,f:()=>chara(g.k,g.x,g.y,{mv:g.moving||g.state==='queue',anim:g.anim,dir:g.dir,suitcase:true,col:g.col,crown:g.vip})});});
   const hp=time-hopT<.5?Math.sin((time-hopT)/.5*Math.PI)*16:0;list.push({y:P.y,f:()=>chara(S.outfit&&sprOK(S.outfit)?S.outfit:'h_player',P.x,P.y,{mv:P.moving&&!hp,anim:P.anim,dir:P.dir,h:110,lift:hp,squash:hp?-.3:0})});
   if(S.pet&&sprOK(S.pet))list.push({y:pet.y,f:()=>drawSpr(ctx,S.pet,pet.x,pet.y-pet.hop,54,{anim:pet.anim,mv:pet.mv,dir:pet.dir})});
-  {const cl=ups[1].level,nB=cl>=4?3:cl>=3?2:cl>=1?1:0;bots.forEach((b,bi)=>{if(bi>=nB)return;const tr=b.target||b.room;if(b.y<574&&tr&&tr.f!==view)return;list.push({y:b.y,f:()=>chara('h_clean',b.x,b.y,{mv:b.moving,anim:b.anim,dir:b.dir,h:100})});});}
+  {const cl=ups[1].level,nB=cl>=4?3:cl>=3?2:cl>=1?1:0;bots.forEach((b,bi)=>{if(bi>=nB||b.mode==='lift')return;if(b.y<574&&(b.fl||0)!==view)return;list.push({y:b.y,f:()=>chara('h_clean',b.x,b.y,{mv:b.moving,anim:b.anim,dir:b.dir,h:100})});});}
   if(ups[2].level>0)list.push({y:DZ.y,f:()=>chara('h_recep',DZ.x-58,DZ.y+4,{anim:time,dir:1,h:100,lift:time-recepT<.6?Math.abs(Math.sin((time-recepT)/.6*Math.PI*2))*12:0})});
   list.sort((a,b)=>a.y-b.y).forEach(o=>o.f());
   const front=guests.find(g=>g.state==='queue');
