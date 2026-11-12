@@ -1456,9 +1456,9 @@ function resize(){dpr=window.devicePixelRatio||1;cv.width=innerWidth*dpr;cv.heig
 addEventListener('resize',resize);resize();
 const KEYS=['sl_norm','sl_dizzy','moon','pine','cloud','lamp','flake','lights','star','cane','cookie','cocoa','storm','owl','snowball','snowman','santa','tree_deco','reindeer','fireplace','elf','wreath',
  'h0','h1','h2','h3','h4','h5','h6','h7','g0','g1','g2','g3','g4','g5','g6','g7',
- 'or_red','or_gold','or_pink','or_mint','or_lilac','or_ginger','or_cane','or_bell','or_gift','or_angel','or_bow','or_topper'];
+ 'or_red','or_gold','or_pink','or_mint','or_lilac','or_ginger','or_cane','or_bell','or_gift','or_angel','or_bow','or_topper','tree'];
 const IM={};let loaded=false;
-function loadAll(){if(loaded)return;loaded=true;for(const k of KEYS){const i=new Image();i.src='img/noel/'+k+'.webp';IM[k]=i;}}
+function loadAll(){if(loaded)return;loaded=true;for(const k of KEYS){const i=new Image();i.src='img/noel/'+k+'.webp';IM[k]=i;}const sc=new Image();sc.src='img/noel/scene.jpg';IM.scene=sc;}
 const ok=k=>IM[k]&&IM[k].complete&&IM[k].naturalWidth>0;
 function spr(k,x,y,h,o={}){if(!ok(k))return 0;const i=IM[k],w=h*i.naturalWidth/i.naturalHeight;ctx.save();ctx.translate(x,y);if(o.rot)ctx.rotate(o.rot);if(o.flip)ctx.scale(-1,1);if(o.a!==undefined)ctx.globalAlpha*=o.a;ctx.drawImage(i,-w/2,-h/2,w,h);ctx.restore();return w;}
 const wOf=(k,h)=>ok(k)?h*IM[k].naturalWidth/IM[k].naturalHeight:h;
@@ -1567,7 +1567,7 @@ function draw(){
   for(const it of items){const b=Math.sin(t*4+it.p)*5;spr(it.k,it.x,it.y+b,it.k==='storm'?70:it.k==='owl'?60:44,{flip:it.k==='owl'});}
   for(const g of gifts)spr(g.k,g.x,g.y,40,{rot:g.r});
   if(mode==='play'||mode==='end')drawSanta();
-  if(mode==='start'){spr('sl_norm',300+Math.sin(t)*40,300+Math.sin(t*2)*10,150);}
+  if((mode==='start'||mode==='end')&&ok('scene')){const i=IM.scene,h=H,w=h*i.naturalWidth/i.naturalHeight;ctx.drawImage(i,(W-w)/2-Math.sin(t*.2)*30,0,w,h);}
   drawSnow();drawFx();
   if(mode==='play')hud();
   ctx.restore();
@@ -1575,15 +1575,17 @@ function draw(){
 
 /* ---- decorar l'arbre ---- */
 const ORN=[['or_red',3],['or_gold',3],['or_pink',4],['or_mint',4],['or_lilac',4],['or_bell',5],['or_cane',5],['or_ginger',6],['or_gift',6],['or_bow',6],['or_angel',8],['or_topper',12]];
-const TREE={x:300,y:440,h:570};let drag=null,tray=0;
-function inTree(x,y){const top=TREE.y-TREE.h*.46,bot=TREE.y+TREE.h*.3;if(y<top||y>bot)return false;const half=(y-top)/(bot-top)*175+12;return Math.abs(x-TREE.x)<half;}
+const TREE={x:300,y:400,h:560};let tmask=null;
+function treeKey(){return ok('tree')?'tree':'pine';}
+function mask(){if(tmask||!ok('tree'))return tmask;const i=IM.tree,c=document.createElement('canvas');c.width=i.naturalWidth;c.height=i.naturalHeight;const x=c.getContext('2d');x.drawImage(i,0,0);try{tmask={w:c.width,h:c.height,d:x.getImageData(0,0,c.width,c.height).data};}catch(e){tmask=null;}return tmask;}let drag=null,tray=0;
+function inTree(x,y){const m=mask();if(m){const k='tree',w=wOf(k,TREE.h),ix=Math.floor((x-(TREE.x-w/2))/w*m.w),iy=Math.floor((y-(TREE.y-TREE.h/2))/TREE.h*m.h);if(ix<0||iy<0||ix>=m.w||iy>=m.h||iy>m.h*.72)return false;return m.d[(iy*m.w+ix)*4+3]>120;}const top=TREE.y-TREE.h*.46,bot=TREE.y+TREE.h*.3;if(y<top||y>bot)return false;const half=(y-top)/(bot-top)*175+12;return Math.abs(x-TREE.x)<half;}
 function trayPos(i){return [48+(i%6)*101,760+Math.floor(i/6)*74];}
 function drawDeco(){
   const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#ffe9f2');g.addColorStop(1,'#f3e4ff');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#f0d9c2';ctx.fillRect(0,640,W,H-640);ctx.fillStyle='rgba(255,255,255,.4)';for(let i=0;i<12;i++)ctx.fillRect(i*50,640,2,H);
   spr('fireplace',95,570,170);spr('wreath',505,170,90);spr('lights',300,70,60);spr('snowman',520,600,110);
   for(let i=0;i<3;i++)spr(['g0','g2','g5'][i],210+i*70,700,56);
-  spr('pine',TREE.x,TREE.y,TREE.h);
+  spr(treeKey(),TREE.x,TREE.y,TREE.h);
   for(const [k,x,y] of D.placed)spr(k,x,y,k==='or_topper'?70:46);
   if(drag)spr(drag.k,drag.x,drag.y,drag.k==='or_topper'?80:54,{a:.9});
   ctx.fillStyle='rgba(255,255,255,.92)';rr(8,722,W-16,170,24);ctx.fill();
