@@ -4,7 +4,7 @@ Portal de jocs per a infants en català, amb estil kawaii.
 Sense anuncis · Sense compres · Sense comptes ni dades personals.
 
 ## Jocs
-- 🏨 Hotel Estrelleta – rep hostes i fes créixer el teu hotel
+- 🏨 Hotel Estrelleta – rep hostes kawaii, compleix els seus desitjos i construeix cafeteria, piscina, jardí i escenari
 - 👗 Vestidor Màgic – pentinats, roba, mascotes i reptes
 - 🧺 La Botigueta – cultiva, omple prestatges i cobra als clients
 - 🧩 Blocs Dolços – encaixa peces i completa files
