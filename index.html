@@ -647,7 +647,7 @@ function guestLook(vip){
   return Math.random()<.78?pick(HUMANS):pick(ANIMS);
 }
 const isAnim=k=>k.startsWith('c_');
-const charH=k=>isAnim(k)?(k==='c_jelly'?58:66):80;
+const charH=k=>isAnim(k)?(k==='c_jelly'?62:72):(GEM[k]?100:84);
 
 /* ---------- món ---------- */
 const ROOM_POS=[[100,185],[300,185],[500,185],[100,430],[300,430],[500,430]];
@@ -774,7 +774,7 @@ function update(dt){
   spawnT-=dt;
   if(spawnT<=0&&q.length<3){spawnT=rand(2.5,4.5);const vip=Math.random()<.13;
     guests.push({x:300+rand(-20,20),y:960,state:'queue',path:[],k:guestLook(vip),vip,col:pick(['#ff9ec4','#7fd4ff','#b48cff','#ffb067','#8fe3a0']),dir:1,anim:rand(0,3),moving:true,t:0});}
-  q.forEach((g,i)=>{g.path=[[300,785+i*45]];walk(g,120,dt);});
+  q.forEach((g,i)=>{g.path=[[300,785+i*52]];walk(g,120,dt);});
 
   // check-in
   const front=q[0];
@@ -1160,9 +1160,9 @@ function draw(){
   }
   const list=[];
   guests.forEach(g=>{if(g.state!=='sleep')list.push({y:g.y,f:()=>chara(g.k,g.x,g.y,{mv:g.moving||g.state==='queue',anim:g.anim,dir:g.dir,suitcase:true,col:g.col,crown:g.vip})});});
-  const hp=time-hopT<.5?Math.sin((time-hopT)/.5*Math.PI)*16:0;list.push({y:P.y,f:()=>chara('h_player',P.x,P.y,{mv:P.moving&&!hp,anim:P.anim,dir:P.dir,h:90,lift:hp,squash:hp?-.3:0})});
-  if(ups[1].level>0)list.push({y:bot.y,f:()=>chara('h_clean',bot.x,bot.y,{mv:bot.moving,anim:bot.anim,dir:bot.dir,h:84})});
-  if(ups[2].level>0)list.push({y:DZ.y,f:()=>chara('h_recep',DZ.x-58,DZ.y+4,{anim:time,dir:1,h:84,lift:time-recepT<.6?Math.abs(Math.sin((time-recepT)/.6*Math.PI*2))*12:0})});
+  const hp=time-hopT<.5?Math.sin((time-hopT)/.5*Math.PI)*16:0;list.push({y:P.y,f:()=>chara('h_player',P.x,P.y,{mv:P.moving&&!hp,anim:P.anim,dir:P.dir,h:110,lift:hp,squash:hp?-.3:0})});
+  if(ups[1].level>0)list.push({y:bot.y,f:()=>chara('h_clean',bot.x,bot.y,{mv:bot.moving,anim:bot.anim,dir:bot.dir,h:100})});
+  if(ups[2].level>0)list.push({y:DZ.y,f:()=>chara('h_recep',DZ.x-58,DZ.y+4,{anim:time,dir:1,h:100,lift:time-recepT<.6?Math.abs(Math.sin((time-recepT)/.6*Math.PI*2))*12:0})});
   list.sort((a,b)=>a.y-b.y).forEach(o=>o.f());
   const front=guests.find(g=>g.state==='queue');
   if(front&&!rooms.some(r=>r.unlocked&&r.state==='clean')&&dist(front.x,front.y,300,785)<3){
