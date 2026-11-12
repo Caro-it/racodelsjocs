@@ -527,6 +527,66 @@ body,button,input,select,textarea{font-family:'Fredoka',system-ui,sans-serif}
     <button class="big" id="splay">A jugar!</button>
   </div>
 </div>
+<!-- ============ VESTIDOR 3D ============ -->
+<div id="dress2" class="screen">
+<style>
+#dress2{background:linear-gradient(#fff4fb,#f6eeff);overflow:auto;font-family:Fredoka,system-ui,sans-serif;color:#5a3aa6}
+#dress2 .d2w{max-width:480px;margin:0 auto;padding:12px 12px 30px;display:flex;flex-direction:column;gap:12px}
+#dress2 .d2hd{display:flex;align-items:center;gap:10px}
+#dress2 .d2home{width:46px;height:46px;border-radius:50%;border:3px solid #fff;background:linear-gradient(#fff,#f5edff);box-shadow:0 4px 0 #e3d2f7;font-size:22px;cursor:pointer}
+#dress2 .d2tt{flex:1;line-height:1.05}#dress2 .d2tt small{display:block;color:#b48cff;font-size:13px;font-weight:600}
+#dress2 .d2tt b{font-size:26px;font-weight:700;background:linear-gradient(90deg,#ff6fa5,#b48cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+#dress2 .d2pill{background:#fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:17px;box-shadow:0 3px 0 #ede0f7;display:flex;gap:5px;align-items:center}
+#dress2 .d2stage{position:relative;background:linear-gradient(#f3e8ff,#e8dcff);border-radius:30px;padding:10px;box-shadow:0 8px 0 #e0cff7}
+#dress2 canvas{width:100%;aspect-ratio:600/760;border-radius:22px;display:block;touch-action:none;background:#fff}
+#dress2 .d2side{position:absolute;right:20px;top:20px;display:flex;flex-direction:column;gap:8px}
+#dress2 .d2side button{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.9);box-shadow:0 3px 8px rgba(120,70,160,.2);font-size:20px;cursor:pointer}
+#dress2 .d2on{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);background:#fff;border-radius:999px;padding:6px 16px;font-size:14px;font-weight:600;box-shadow:0 3px 0 #ede0f7;white-space:nowrap}
+#dress2 .d2on b{color:#d9567f}
+#dress2 #d2flash{position:absolute;inset:10px;border-radius:22px;background:#fff;opacity:0;pointer-events:none;transition:opacity .25s}
+#dress2 .d2sec{display:flex;justify-content:space-between;align-items:center;font-weight:700;color:#8a5ae0;letter-spacing:.5px;font-size:14px;padding:0 4px}
+#dress2 .d2tabs{display:flex;gap:8px;overflow:auto;padding:2px 2px 6px}
+#dress2 .d2tab{flex:0 0 auto;border:0;border-radius:999px;padding:10px 16px;font:700 16px Fredoka,system-ui;background:#fff;color:#7b4bd6;box-shadow:0 3px 0 #ede0f7;cursor:pointer}
+#dress2 .d2tab.on{background:linear-gradient(90deg,#9b6ef0,#7b4bd6);color:#fff;box-shadow:0 4px 0 #5a3aa6}
+#dress2 #d2grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+#dress2 .d2it{position:relative;background:#fff;border-radius:22px;padding:8px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 4px 0 #ede0f7;cursor:pointer;border:3px solid transparent}
+#dress2 .d2it.on{border-color:#ff8fb8;box-shadow:0 4px 0 #ffcfe0}
+#dress2 .d2tag{position:absolute;top:-10px;left:10px;background:#c2407a;color:#fff;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px}
+#dress2 .d2pic{width:100%;height:120px;border-radius:16px;background:linear-gradient(#fbf3ff,#f1e6ff);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+#dress2 .d2pic img{max-height:108px;max-width:90%;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(120,70,160,.2))}
+#dress2 .d2pic.lk img{filter:grayscale(.4) blur(1px);opacity:.6}
+#dress2 .d2lock{position:absolute;font-size:26px;background:#fff;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 6px rgba(0,0,0,.15)}
+#dress2 .d2it b{font-size:15px;font-weight:600;color:#3d2a5c}
+#dress2 .d2cost,#dress2 .d2ok{font-size:14px;font-weight:700;border-radius:999px;padding:5px 12px;width:90%;text-align:center}
+#dress2 .d2cost{background:#f1e8ff;color:#7b4bd6}#dress2 .d2ok{background:#ffe0ec;color:#c2407a}
+#dress2 .d2reto{background:#fff;border-radius:24px;padding:14px;box-shadow:0 4px 0 #ede0f7}
+#dress2 .d2rh{display:flex;gap:10px;align-items:center}#dress2 .d2rh span:first-child{font-size:28px}#dress2 .d2rh div{flex:1}
+#dress2 .d2rh b{display:block;font-size:19px;color:#3d2a5c}#dress2 .d2rh small{color:#7b4bd6;font-size:13px}
+#dress2 .d2pc{background:#ffe0ec;color:#c2407a;font-weight:700;border-radius:14px;padding:6px 10px;font-size:14px}
+#dress2 .d2bar{height:12px;background:#f1e8ff;border-radius:99px;margin:10px 0 6px;overflow:hidden}#dress2 .d2bar i{display:block;height:100%;background:linear-gradient(90deg,#ff8fb8,#b48cff);border-radius:99px}
+#dress2 .d2rf{font-size:13px;color:#8a7aa6}
+#dress2 .d2go{border:0;border-radius:999px;padding:16px;font:700 20px Fredoka,system-ui;color:#fff;background:linear-gradient(90deg,#c2407a,#9b3e64);box-shadow:0 6px 0 #6e2448;cursor:pointer}
+#dress2 .d2bot{display:flex;gap:10px}#dress2 .d2bot button{flex:1;border:0;border-radius:999px;padding:12px;font:700 16px Fredoka,system-ui;background:#fff;color:#c2407a;box-shadow:0 4px 0 #ede0f7;cursor:pointer}
+#d2modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(60,30,90,.45);z-index:40;padding:16px}
+#d2modal .d2box{width:min(92vw,400px);max-height:86vh;overflow:auto;background:linear-gradient(#fff,#fdf0ff);border-radius:28px;padding:18px;text-align:center;border:4px solid #fff;font-family:Fredoka,system-ui;color:#5a3aa6}
+#d2modal h2{margin:4px 0 8px;color:#d9567f}#d2modal .d2big{font-size:34px;margin:6px}#d2modal .d2hint{font-size:14px;color:#8a7aa6}
+#d2modal .d2btn{border:0;border-radius:999px;padding:12px 24px;font:700 18px Fredoka,system-ui;color:#fff;background:linear-gradient(90deg,#ff8fb8,#ff6fa5);box-shadow:0 4px 0 #d9567f;margin-top:10px;cursor:pointer}
+#d2modal .d2alb{display:grid;grid-template-columns:1fr 1fr;gap:8px}#d2modal .d2alb img{width:100%;border-radius:14px;border:4px solid #fff;box-shadow:0 3px 8px rgba(120,70,160,.2)}
+</style>
+<div class="d2w">
+  <div class="d2hd"><button class="d2home" data-go="menu" aria-label="Tornar al menú">🏠</button><div class="d2tt"><small>El Racó dels Jocs</small><b>Vestidor Màgic 👑</b></div><span class="d2pill">⭐ <span id="d2stars">0</span></span></div>
+  <div class="d2stage"><canvas id="d2c"></canvas><div id="d2flash"></div>
+    <div class="d2side"><button data-a="rand" title="Look sorpresa">🎲</button><button data-a="clear" title="Treure accessoris">🧹</button><button data-a="photo" title="Fer foto">📸</button></div>
+    <div class="d2on">🎨 Fons: <b id="d2bgname"></b> · arrossega els accessoris!</div></div>
+  <div class="d2sec"><span>ARMARI MÀGIC</span><span>4 categories</span></div>
+  <div class="d2tabs"><button class="d2tab" data-t="looks">👗 Looks</button><button class="d2tab" data-t="acc">👑 Accessoris</button><button class="d2tab" data-t="pets">🐾 Mascotes</button><button class="d2tab" data-t="bg">🎨 Fons</button></div>
+  <div id="d2grid"></div>
+  <div class="d2reto" id="d2reto"></div>
+  <button class="d2go" data-a="show">✨ Desfilada a la Passarel·la! ✨</button>
+  <div class="d2bot"><button data-a="photo">📸 Fer foto</button><button data-a="album">📖 El meu àlbum</button></div>
+</div>
+<div id="d2modal"></div>
+</div>
 <!-- ============ PARE NOEL ============ -->
 <div id="noel" class="screen" style="background:#1d1b4a;touch-action:none">
   <button class="home" data-go="menu" aria-label="Tornar al menú">🏠</button>
@@ -1451,6 +1511,131 @@ addEventListener('beforeunload',save);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 return {resize,update,draw,_s:S,get _rooms(){return rooms},_all:allRooms,_ups:ups,_fac:FAC,_P:P,_guests:()=>guests,_start:()=>{started=true;}};
 })();
+/* ================= VESTIDOR MÀGIC 3D ================= */
+const Dress2=(()=>{
+const root=document.getElementById('dress2'),cv=document.getElementById('d2c'),ctx=cv.getContext('2d');
+const W=600,H=760;cv.width=W*2;cv.height=H*2;ctx.scale(2,2);
+const $q=s=>root.querySelector(s);
+const KEY='vestidor3d_v1';
+const old=(()=>{try{return JSON.parse(localStorage.getItem('vestidorProgreso_v1'))||{};}catch(e){return {};}})();
+const D=(()=>{try{return Object.assign({stars:5+(old.stars||0),own:{},look:'base',acc:{},pet:'',bg:'boutique',reto:0,album:[],done:{}},JSON.parse(localStorage.getItem(KEY))||{});}catch(e){return {stars:5,own:{},look:'base',acc:{},pet:'',bg:'boutique',reto:0,album:[],done:{}};}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){try{D.album=D.album.slice(-4);localStorage.setItem(KEY,JSON.stringify(D));}catch(e2){}}};
+const LOOKS=[['base','Bàsic',0,[]],['l_summer','Estiu',0,['estiu']],['l_party','Festa',0,['festa']],['l_school','Escola',0,[]],['l_sport','Esport',3,[]],['l_pyjama','Pijama',0,['nit']],
+ ['l_chef','Xef',4,[]],['l_beach','Platja',5,['estiu']],['l_winter','Hivern',6,['neu']],['l_ballet','Ballet',6,['festa']],['l_kimono','Quimono',8,[]],['l_rock','Rock',8,['rock']],
+ ['l_cowgirl','Vaquera',8,[]],['l_fairy','Fada',10,['magia']],['l_mermaid','Sirena',12,['magia']],['l_astro','Astronauta',12,[]],['l_princess','Princesa',15,['festa','princesa']]];
+const ACC={a_tiara:['Diadema',0,[300,150],120,'cap'],a_flowers:['Corona de flors',0,[300,152],150,'cap'],a_catears:['Orelles de gat',3,[300,140],160,'cap'],a_hat:['Barret',4,[300,140],210,'cap'],
+ a_heartgl:['Ulleres de cor',0,[300,248],120,'ulls'],a_roundgl:['Ulleres rodones',3,[300,248],115,'ulls'],a_scarf:['Bufanda',4,[300,350],120,'coll'],
+ a_bag:['Bossa',3,[392,470],95,'ma'],a_backpack:['Motxilla',4,[205,420],110,'esq'],a_wand:['Vareta màgica',6,[405,440],105,'ma'],
+ a_bwings:['Ales de papallona',8,[300,360],400,'ales'],a_awings:['Ales d’àngel',10,[300,350],380,'ales']};
+const PETS=[['p_cat','Gateta',4],['p_dog','Gosset',4],['p_bunny','Conillet',5],['p_fox','Guineu',6],['p_panda','Panda',6],['p_unicorn','Unicorn',10],['p_dragon','Dragonet',12]];
+const BGS={boutique:['Botiga','#ffe3f1','#e9dcff'],platja:['Platja','#bfe9ff','#fff1c9'],festa:['Festa','#e5d4ff','#ffd3ea'],hivern:['Neu','#e8f4ff','#ffffff'],jardi:['Jardí','#d9f5d2','#fff6c9'],passarela:['Passarel·la','#ffd3ea','#b9a0f5']};
+const RETOS=[
+ {t:'Festa d’Estiu',d:'Look d’estiu, fons de platja i un barret o ulleres.',c:[()=>tags().includes('estiu'),()=>D.bg==='platja',()=>D.acc.a_hat||D.acc.a_heartgl||D.acc.a_roundgl],p:15},
+ {t:'Ball de Princeses',d:'Look de festa, una diadema i fons de festa.',c:[()=>tags().includes('festa'),()=>D.acc.a_tiara||D.acc.a_flowers,()=>D.bg==='festa'],p:15},
+ {t:'Dia de Neu',d:'Look d’hivern, una bufanda i fons de neu.',c:[()=>tags().includes('neu'),()=>D.acc.a_scarf,()=>D.bg==='hivern'],p:15},
+ {t:'Somni Màgic',d:'Look màgic, ales o vareta i fons de jardí.',c:[()=>tags().includes('magia'),()=>D.acc.a_wand||D.acc.a_bwings||D.acc.a_awings,()=>D.bg==='jardi'],p:20},
+ {t:'Estrella del Rock',d:'Look rock, ulleres i la passarel·la.',c:[()=>tags().includes('rock'),()=>D.acc.a_heartgl||D.acc.a_roundgl,()=>D.bg==='passarela'],p:20},
+ {t:'Nit de Pijames',d:'Pijama, una mascota i orelles de gat.',c:[()=>tags().includes('nit'),()=>D.pet,()=>D.acc.a_catears],p:15}];
+const tags=()=>(LOOKS.find(l=>l[0]===D.look)||[0,0,0,[]])[3];
+const IM={};const img=k=>{if(!IM[k]){const i=new Image();i.src=k.startsWith('p_')&&typeof SPR!=='undefined'&&SPR[k]?SPR[k].src:'img/dress/'+k+'.webp';IM[k]=i;}return IM[k];};
+const ok=k=>{const i=img(k);return i.complete&&i.naturalWidth>0;};
+const src=k=>img(k).src;
+let tab='looks',t=0,pop=0,drag=null,show=null,last=0;
+function sfx(f){try{f();}catch(e){}}
+
+/* ---- escenari ---- */
+function drawBg(){const b=BGS[D.bg]||BGS.boutique,g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,b[1]);g.addColorStop(1,b[2]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha=.6;for(let i=0;i<26;i++){const x=(i*137)%W,y=(i*89+t*12*(1+i%3))%H;ctx.fillStyle=['#fff','#ffd75e','#ff9ec4','#b48cff'][i%4];ctx.beginPath();ctx.arc(x,y,2+(i%3),0,7);ctx.fill();}ctx.globalAlpha=1;
+  const deco={boutique:[['d_flowerarch',90,420,260],['d_balloons',510,420,220]],festa:[['d_balloons',100,400,260],['d_balloons',500,400,260]],jardi:[['d_flowerarch',300,380,420],['f_plant',80,640,110],['f_plant',520,640,110]],
+    platja:[['k3_star',90,110,50]],hivern:[['k3_star',520,100,40]],passarela:[['d_piano',90,560,170]]}[D.bg]||[];
+  for(const [k,x,y,h] of deco)if(typeof SPR!=='undefined'&&SPR[k]&&SPR[k].complete){const i=SPR[k],w=h*i.naturalWidth/i.naturalHeight;ctx.globalAlpha=.9;ctx.drawImage(i,x-w/2,y-h/2,w,h);ctx.globalAlpha=1;}
+  if(D.bg==='platja'){ctx.fillStyle='#ffe6a8';ctx.fillRect(0,560,W,H);ctx.fillStyle='#8fd8ff';ctx.fillRect(0,500,W,60);}
+  if(D.bg==='hivern'){ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(300,700,420,140,0,0,7);ctx.fill();}
+  if(D.bg==='passarela'){ctx.fillStyle='rgba(255,255,255,.5)';ctx.beginPath();ctx.moveTo(240,300);ctx.lineTo(360,300);ctx.lineTo(560,H);ctx.lineTo(40,H);ctx.closePath();ctx.fill();
+    for(const sx of [120,480]){const g2=ctx.createRadialGradient(sx,0,5,sx,0,400);g2.addColorStop(0,'rgba(255,255,255,.7)');g2.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g2;ctx.beginPath();ctx.moveTo(sx,0);ctx.lineTo(300-80,H);ctx.lineTo(300+80,H);ctx.fill();}}
+}
+function podium(){ctx.fillStyle='rgba(120,60,160,.15)';ctx.beginPath();ctx.ellipse(300,712,170,34,0,0,7);ctx.fill();
+  const g=ctx.createLinearGradient(130,0,470,0);g.addColorStop(0,'#ffd3e6');g.addColorStop(.5,'#fff');g.addColorStop(1,'#ffd3e6');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(300,700,160,30,0,0,Math.PI);ctx.lineTo(140,672);ctx.ellipse(300,672,160,30,0,Math.PI,0,true);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#ffeef6';ctx.beginPath();ctx.ellipse(300,672,160,30,0,0,7);ctx.fill();ctx.strokeStyle='#ffb3cf';ctx.lineWidth=3;ctx.stroke();}
+function dollBox(){const k=D.look,i=img(k);const h=k==='l_princess'||k==='l_mermaid'?560:540;const w=ok(k)?h*i.naturalWidth/i.naturalHeight:200;return {x:300-w/2,y:680-h,w,h};}
+function drawImg(k,x,y,w,h){if(ok(k))ctx.drawImage(img(k),x-w/2,y-h/2,w,h);}
+function accSize(k){const a=ACC[k],i=img(k);const w=a[3];return [w,ok(k)?w*i.naturalHeight/i.naturalWidth:w];}
+function draw(){
+  ctx.setTransform(2,0,0,2,0,0);drawBg();if(show){drawShow();return;}podium();
+  const bob=Math.sin(t*2.2)*4,sc=1+pop*.06;
+  for(const k of ['a_bwings','a_awings','a_backpack'])if(D.acc[k]){const [x,y]=D.acc[k],[w,h]=accSize(k);ctx.save();ctx.translate(x,y+bob);ctx.rotate(k!=='a_backpack'?Math.sin(t*3)*.03:0);drawImg(k,0,0,w,h);ctx.restore();}
+  const b=dollBox();ctx.save();ctx.translate(300,680);ctx.scale(sc,sc*(1-Math.sin(t*2.2)*.008));if(ok(D.look))ctx.drawImage(img(D.look),-b.w/2,-b.h+bob,b.w,b.h);ctx.restore();
+  for(const k in D.acc){if(k==='a_bwings'||k==='a_awings'||k==='a_backpack')continue;const [x,y]=D.acc[k],[w,h]=accSize(k);drawImg(k,x,y+bob,w,h);}
+  if(D.pet&&ok(D.pet)){const i=img(D.pet),h=120,w=h*i.naturalWidth/i.naturalHeight,hop=Math.abs(Math.sin(t*3))*10;ctx.drawImage(i,470-w/2,690-h-hop,w,h);}
+  drawSparks();
+}
+function drawSparks(){for(const s of sparks){ctx.globalAlpha=1-s.t;ctx.fillStyle=s.c;ctx.beginPath();ctx.arc(s.x,s.y,4,0,7);ctx.fill();}ctx.globalAlpha=1;}
+let sparks=[];
+function burst(x,y,n=24){for(let i=0;i<n;i++)sparks.push({x,y,vx:(Math.random()-.5)*400,vy:-Math.random()*400,t:0,c:['#ffd75e','#ff8fb8','#b48cff','#8fe3a0','#fff'][i%5]});}
+function upd(dt){t+=dt;pop=Math.max(0,pop-dt*3);for(const s of sparks){s.t+=dt*1.2;s.vy+=700*dt;s.x+=s.vx*dt;s.y+=s.vy*dt;}sparks=sparks.filter(s=>s.t<1);if(show){show.t+=dt;if(show.t>3.4&&!show.done){show.done=true;finishShow();}}}
+
+/* ---- arrossegar accessoris ---- */
+const toW=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H];};
+cv.addEventListener('pointerdown',e=>{const [x,y]=toW(e);const ks=Object.keys(D.acc).reverse();for(const k of ks){const [ax,ay]=D.acc[k],[w,h]=accSize(k);if(Math.abs(x-ax)<w/2&&Math.abs(y-ay)<h/2){drag={k,dx:x-ax,dy:y-ay};try{cv.setPointerCapture(e.pointerId);}catch(er){}return;}}});
+cv.addEventListener('pointermove',e=>{if(!drag)return;const [x,y]=toW(e);D.acc[drag.k]=[Math.round(x-drag.dx),Math.round(y-drag.dy)];});
+cv.addEventListener('pointerup',()=>{if(drag){drag=null;save();}});
+
+/* ---- desfilada ---- */
+function score(){const r=RETOS[D.reto%RETOS.length],n=r.c.filter(f=>f()).length,items=Object.keys(D.acc).length+(D.pet?1:0)+(D.look!=='base'?1:0);return {r,n,full:n===r.c.length,stars:Math.min(3,1+(n>=2?1:0)+(items>=3?1:0))};}
+function startShow(){if(show)return;show={t:0,s:score(),bg:D.bg};D.bg='passarela';sfx(()=>fanfare());}
+function drawShow(){const p=Math.min(1,show.t/2.2);
+  ctx.fillStyle='rgba(60,30,90,.12)';ctx.fillRect(0,0,W,H);
+  const s=.55+p*.5,b=dollBox();ctx.save();ctx.translate(300,380+p*300);ctx.scale(s,s);ctx.rotate(Math.sin(show.t*8)*.02);if(ok(D.look))ctx.drawImage(img(D.look),-b.w/2,-b.h,b.w,b.h);ctx.restore();
+  const J=['p_cat','p_bunny','p_dog'];if(show.t>2.3)J.forEach((k,i)=>{const x=110+i*190,y=110;ctx.fillStyle='#fff';ctx.beginPath();ctx.roundRect?ctx.roundRect(x-60,y-50,120,100,20):ctx.rect(x-60,y-50,120,100);ctx.fill();
+    if(typeof SPR!=='undefined'&&SPR[k]&&SPR[k].complete){const im=SPR[k],h=60,w=h*im.naturalWidth/im.naturalHeight;ctx.drawImage(im,x-w/2,y-40,w,h);}
+    const st=show.s.stars;ctx.font='700 22px Fredoka,system-ui';ctx.textAlign='center';ctx.fillStyle='#ffb800';ctx.fillText('★'.repeat(Math.max(1,st-(i===1&&st>1?0:0))),x,y+38);});
+  if(Math.random()<.4)burst(Math.random()*W,0,3);drawSparks();}
+function finishShow(){const s=show.s;let win=s.stars;if(s.full&&!D.done[D.reto%RETOS.length]){win+=s.r.p;D.done[D.reto%RETOS.length]=1;}
+  D.stars+=win;D.bg=show.bg;if(s.full)D.reto++;save();sfx(()=>ding());
+  modal(`<h2>${s.full?'🏆 Repte superat!':'✨ Quina desfilada!'}</h2><p class="d2big">${'⭐'.repeat(s.stars)}</p><p>Has guanyat <b>${win}</b> estrelles${s.full?' (inclou el premi del repte!)':''}</p>${s.full?'':`<p class="d2hint">Per superar el repte: ${s.r.d}</p>`}<button class="d2btn" data-x="close">Seguir vestint</button>`);
+  show=null;render();}
+
+/* ---- UI ---- */
+function modal(h){const m=$q('#d2modal');m.innerHTML=`<div class="d2box">${h}</div>`;m.style.display='flex';}
+$q('#d2modal').addEventListener('click',e=>{const b=e.target.closest('[data-x]');if(b||e.target.id==='d2modal')$q('#d2modal').style.display='none';});
+function card(k,name,cost,on,own,label){const lock=!own;return `<div class="d2it${on?' on':''}" data-k="${k}">${on?'<span class="d2tag">✓ Posat</span>':''}<div class="d2pic${lock?' lk':''}"><img src="${src(k)}" alt="">${lock?'<span class="d2lock">🔒</span>':''}</div><b>${name}</b>${lock?`<span class="d2cost">⭐ ${cost}</span>`:`<span class="d2ok">${label||(on?'Treure':'Posar')}</span>`}</div>`;}
+function render(){
+  $q('#d2stars').textContent=D.stars;
+  root.querySelectorAll('.d2tab').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  let h='';
+  if(tab==='looks')h=LOOKS.map(([k,n,c])=>card(k,n,c,D.look===k,c===0||D.own[k],D.look===k?'Posat':'Provar')).join('');
+  if(tab==='acc')h=Object.entries(ACC).map(([k,a])=>card(k,a[0],a[1],!!D.acc[k],a[1]===0||D.own[k])).join('');
+  if(tab==='pets')h=PETS.map(([k,n,c])=>card(k,n,c,D.pet===k,D.own[k])).join('');
+  if(tab==='bg')h=Object.entries(BGS).map(([k,b])=>`<div class="d2it${D.bg===k?' on':''}" data-bg="${k}"><div class="d2pic" style="background:linear-gradient(${b[1]},${b[2]})"></div><b>${b[0]}</b><span class="d2ok">${D.bg===k?'Actiu':'Posar'}</span></div>`).join('');
+  $q('#d2grid').innerHTML=h;
+  const r=RETOS[D.reto%RETOS.length],n=r.c.filter(f=>f()).length;
+  $q('#d2reto').innerHTML=`<div class="d2rh"><span>🏆</span><div><b>Repte: ${r.t}</b><small>${r.d}</small></div><span class="d2pc">${Math.round(n/r.c.length*100)}%</span></div><div class="d2bar"><i style="width:${n/r.c.length*100}%"></i></div><div class="d2rf">${n} de ${r.c.length} llestos · Premi: +${r.p} ⭐</div>`;
+  $q('#d2bgname').textContent=BGS[D.bg][0];
+}
+root.addEventListener('click',e=>{
+  const tb=e.target.closest('.d2tab');if(tb){tab=tb.dataset.t;render();return;}
+  const bg=e.target.closest('[data-bg]');if(bg){D.bg=bg.dataset.bg;save();render();sfx(()=>swish());return;}
+  const it=e.target.closest('.d2it[data-k]');if(it){const k=it.dataset.k;
+    const cost=tab==='looks'?LOOKS.find(l=>l[0]===k)[2]:tab==='acc'?ACC[k][1]:PETS.find(p=>p[0]===k)[2];
+    if(cost>0&&!D.own[k]){if(D.stars<cost){modal(`<h2>Necessites més ⭐</h2><p>Et calen <b>${cost}</b> estrelles. Fes desfilades i reptes per guanyar-ne!</p><button class="d2btn" data-x="1">D’acord</button>`);return;}D.stars-=cost;D.own[k]=1;sfx(()=>fanfare());}
+    if(tab==='looks'){D.look=k;pop=1;burst(300,380);}
+    if(tab==='acc'){if(D.acc[k])delete D.acc[k];else{D.acc[k]=ACC[k][2].slice();burst(ACC[k][2][0],ACC[k][2][1],12);}}
+    if(tab==='pets'){D.pet=D.pet===k?'':k;}
+    sfx(()=>ding());save();render();return;}
+  const a=e.target.closest('[data-a]');if(!a)return;const act=a.dataset.a;
+  if(act==='rand'){const own=LOOKS.filter(l=>l[2]===0||D.own[l[0]]);D.look=own[Math.floor(Math.random()*own.length)][0];D.acc={};const acs=Object.keys(ACC).filter(k=>ACC[k][1]===0||D.own[k]);acs.sort(()=>Math.random()-.5).slice(0,2).forEach(k=>D.acc[k]=ACC[k][2].slice());const bgs=Object.keys(BGS);D.bg=bgs[Math.floor(Math.random()*bgs.length)];pop=1;burst(300,380);sfx(()=>swish());save();render();}
+  if(act==='clear'){D.acc={};D.pet='';save();render();}
+  if(act==='show')startShow();
+  if(act==='photo'){try{const c=document.createElement('canvas');c.width=300;c.height=380;c.getContext('2d').drawImage(cv,0,0,300,380);D.album.push(c.toDataURL('image/jpeg',.7));if(D.album.length>8)D.album.shift();save();
+    const f=$q('#d2flash');f.style.opacity=1;setTimeout(()=>f.style.opacity=0,150);sfx(()=>ding());}catch(er){modal('<h2>Ups!</h2><p>No s’ha pogut fer la foto.</p><button class="d2btn" data-x="1">D’acord</button>');}}
+  if(act==='album')modal(`<h2>📖 El meu àlbum</h2>${D.album.length?`<div class="d2alb">${D.album.slice().reverse().map(u=>`<img src="${u}" alt="">`).join('')}</div>`:'<p>Encara no hi ha fotos. Toca 📸 per fer-ne!</p>'}<button class="d2btn" data-x="1">Tancar</button>`);
+});
+function open(){render();}
+function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(current==='dress2'){upd(dt);draw();}requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+return {open,_D:D,_render:render};
+})();
+
 /* ================= EL PARE NOEL ================= */
 const Noel=(()=>{
 const W=600,H=900,GROUND=800,SX=150;
@@ -2828,9 +3013,9 @@ const G={
  noel:{t:'El Pare Noel',e:'🎅',d:'Vola amb el trineu, deixa els regals a les xemeneies i decora l’arbre de Nadal.',st:['st-new','✦ Nou!'],btn:'c-pink',icon:'redeem',age:'5-10 anys',dur:'1 min',cat:'accio',
   how:[['swipe_vertical','#ebdcff','#6f47b6','<em>Arrossega</em> per pujar i baixar el trineu.'],['redeem','#ffd9e3','#9b3e64','<em>Toca</em> per deixar caure regals a les <em>xemeneies</em>.'],['park','#d9f5d2','#2e7d4f','Agafa <em>estrelles</em> i decora l’arbre!']],
   rec:()=>{const d=LS.get('pareNoel_v1',null);if(!d||!d.best)return null;return {v:d.best,l:'punts',score:d.best};}},
- dress:{t:'Vestidor Màgic',e:'👗',d:'Pentinats, roba, mascotes i reptes de moda amb passarel·la.',st:['st-top','👑 Popular'],btn:'c-pink',icon:'auto_awesome',age:'5-10 anys',dur:'Sense límit',cat:'crear',
+ dress:{t:'Vestidor Màgic',e:'👗',d:'Looks 3D, accessoris, mascotes, reptes de moda i desfilada a la passarel·la.',st:['st-top','👑 Popular'],btn:'c-pink',icon:'auto_awesome',age:'5-10 anys',dur:'Sense límit',cat:'crear',
   how:[['styler','#ffd9e3','#9b3e64','Tria <em>cabells, roba i complements</em>.'],['emoji_events','#ebdcff','#6f47b6','Fes <em>reptes</em> i guanya estrelles.'],['photo_camera','#c1e8ff','#006688','Desa els teus looks a <em>l’àlbum</em>.']],
-  rec:()=>{const d=LS.get('vestidorProgreso_v1',null);if(!d)return null;return {v:d.stars||0,l:'estrelles',score:d.stars||0};}},
+  rec:()=>{const d=LS.get('vestidor3d_v1',null)||LS.get('vestidorProgreso_v1',null);if(!d)return null;return {v:d.stars||0,l:'estrelles',score:d.stars||0};}},
  shop:{t:'La Botigueta',e:'🧺',d:'Cultiva fruita, omple els prestatges i cobra als clients animalets.',st:['st-new','✦ Nou!'],btn:'c-lilac',icon:'storefront',age:'6-10 anys',dur:'Sense límit',cat:'gestio',
   how:[['agriculture','#d9f5d2','#2e7d4f','Recull <em>maduixes, pomes i magdalenes</em>.'],['shelves','#ffd9e3','#9b3e64','Omple els <em>prestatges</em> de la botiga.'],['point_of_sale','#c1e8ff','#006688','Cobra a la <em>caixa</em> i amplia la botiga.']],
   rec:()=>{const d=LS.get('botigueta_v1',null);if(!d)return null;const n=(d.u||[]).filter(Boolean).length;return {v:n+'/3',l:'productes',score:n};}},
@@ -2913,6 +3098,7 @@ function openStart(k){
   go('gstart');$('gstart').scrollTop=0;
 }
 function launch(k){
+  if(k==='dress'){go('dress2');Dress2.open();return;}
   go(k);
   if(k==='hotel'){const b=$('hplay');if($('hstart').style.display!=='none')b.click();}
   if(k==='shop'){const b=$('splay');if($('sstart').style.display!=='none')b.click();}
