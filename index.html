@@ -673,19 +673,22 @@ FAC.forEach(f=>{const L=f.x<300;f.ux=L?f.x-78:f.x+78;f.uy=f.y-48;f.px=L?f.x+72:f
 const DESK={x:300,y:722,w:180,h:44};
 const DZ={x:300,y:668,r:34};
 const PILE={x:432,y:722,r:40};
-const S={coins:0,pile:0,complete:false,hearts:0};
+const S={coins:0,pile:0,complete:false,hearts:0,floor:1,expPaid:0};
+const EXP={x:300,y:566};const expPrice=()=>400*S.floor;
+function applyFloor(){rooms.forEach(r=>r.price=Math.round(ROOM_PRICE[r.i]*(1+(S.floor-1)*1.5)));}
+const ci=r=>(r.i+S.floor-1)%6;
 const WISHES=['🥐','🧸','🍓','🌸','🍫','🧃','📚','🎈'];const WSPR={'🥐':'k3_croissant','🧸':'k3_teddy','🍓':'k3_straw','🌸':'k3_flower','🍫':'k3_choco','🧃':'k3_juice','📚':'k3_book','🎈':'k3_balloon'};
 
-function save(){try{localStorage.setItem(KEY,JSON.stringify({coins:S.coins,pile:S.pile,complete:S.complete,hearts:S.hearts,rooms:rooms.map(r=>({u:r.unlocked,p:r.paid})),ups:ups.map(u=>({l:u.level,p:u.paid})),fac:FAC.map(f=>({l:f.level,p:f.paid,c:f.pile}))}));}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({coins:S.coins,pile:S.pile,complete:S.complete,hearts:S.hearts,floor:S.floor,expPaid:S.expPaid,rooms:rooms.map(r=>({u:r.unlocked,p:r.paid})),ups:ups.map(u=>({l:u.level,p:u.paid})),fac:FAC.map(f=>({l:f.level,p:f.paid,c:f.pile}))}));}catch(e){}}
 function load(){
   let d=null;try{d=JSON.parse(localStorage.getItem(KEY));}catch(e){}
   if(!d)return;
-  S.coins=d.coins||0;S.pile=d.pile||0;S.complete=!!d.complete;S.hearts=d.hearts||0;
+  S.coins=d.coins||0;S.pile=d.pile||0;S.complete=!!d.complete;S.hearts=d.hearts||0;S.floor=d.floor||1;S.expPaid=d.expPaid||0;
   (d.rooms||[]).forEach((s,i)=>{if(rooms[i]){rooms[i].unlocked=!!s.u||i===0;rooms[i].paid=s.p||0;}});
   (d.ups||[]).forEach((s,i)=>{if(ups[i]){ups[i].level=Math.min(s.l||0,ups[i].prices.length);ups[i].paid=s.p||0;}});
   (d.fac||[]).forEach((s,i)=>{if(FAC[i]){FAC[i].level=Math.min(s.l||0,3);FAC[i].paid=s.p||0;FAC[i].pile=s.c||0;}});
 }
-load();
+load();applyFloor();
 
 const P={x:300,y:600,dir:1,anim:0,moving:false};
 const bot={x:470,y:580,path:[],room:null,target:null,dir:1,anim:0,moving:false};
@@ -748,7 +751,7 @@ const endJoy=e=>{if(joy&&e.pointerId===joy.id)joy=null;};
 cv.addEventListener('pointerup',endJoy);cv.addEventListener('pointercancel',endJoy);
 
 function resetGame(){
-  S.coins=0;S.pile=0;S.complete=false;S.hearts=0;
+  S.coins=0;S.pile=0;S.complete=false;S.hearts=0;S.floor=1;S.expPaid=0;applyFloor();
   rooms.forEach(r=>{r.unlocked=r.i===0;r.paid=0;r.state='clean';r.clean=0;r.claimed=false;});
   ups.forEach(u=>{u.level=0;u.paid=0;});
   FAC.forEach(f=>{f.level=0;f.paid=0;f.pile=0;f.t=0;});
@@ -786,7 +789,7 @@ function update(dt){
     if(checkT>=1){
       checkT=0;front.state='toRoom';front.room=free;free.state='reserved';
       front.path=[[160,760],[160,578]].concat(doorPath(free),[[free.x,free.y-50]]);
-      let pay=5+ups[3].level*3+ups[4].level*2;if(front.vip)pay*=2;
+      let pay=5+ups[3].level*3+ups[4].level*2+(S.floor-1)*4;if(front.vip)pay*=2;
       recepT=time;S.pile+=pay;floaty((front.vip?'👑 VIP +':'+')+pay,PILE.x,PILE.y-40,'#ffb800',26);ding();save();
     }
   }else checkT=Math.max(0,checkT-dt);
@@ -847,6 +850,12 @@ function update(dt){
     if(dist(P.x,P.y,zx,zy)<zr){inZone=true;payInto(f,f.prices[f.level],dt,()=>{
       f.level++;f.paid=0;confetti(f.x,f.y,50);fanfare();floaty(f.icon+' '+f.name+(f.level>1?' nivell '+f.level:' oberta')+'!',f.x,f.y-70,'#7b4bd6',22);save();});}
   }
+  if(!nl&&dist(P.x,P.y,EXP.x,EXP.y)<50){inZone=true;const o={paid:S.expPaid,zx:EXP.x,zy:EXP.y};payInto(o,expPrice(),dt,()=>{
+      S.floor++;o.paid=0;S.complete=false;applyFloor();
+      guests.forEach(g=>{if(g.state==='toRoom'||g.state==='sleep')g.dead=true;});
+      rooms.forEach(r=>{r.unlocked=r.i===0;r.paid=0;r.state='clean';r.clean=0;r.claimed=false;});bot.target=null;bot.room=null;bot.path=[[470,580]];
+      confetti(300,300,90);confetti(300,560,60);fanfare();floaty('🏨 Planta '+S.floor+'!',300,330,'#ff4d8d',36);floaty('Els hostes paguen més!',300,380,'#7b4bd6',22);});
+    S.expPaid=o.paid;if(o.paid===0)save();}
   if(!inZone)payAcc=0;
 
   // netejador
@@ -957,17 +966,17 @@ function zone(x,y,r,paid,price,icon,label,spr){
 
 function drawRoom3D(r){
   const x0=r.x-85,y0=r.y-105,w=170,h=210,lux=ups[4].level;
-  ctx.fillStyle=lighten(CARPET[r.i],-25);rr(x0-4,y0-4,w+8,h+8,20);ctx.fill();
+  ctx.fillStyle=lighten(CARPET[ci(r)],-25);rr(x0-4,y0-4,w+8,h+8,20);ctx.fill();
   ctx.save();rr(x0,y0,w,h,16);ctx.clip();
   for(let i=0;i<9;i++){ctx.fillStyle=i%2?'#f8e4cf':'#f4dbc2';ctx.fillRect(x0,y0+i*24,w,24);}
-  ctx.fillStyle=CARPET[r.i];ctx.fillRect(x0,y0,w,30);
+  ctx.fillStyle=CARPET[ci(r)];ctx.fillRect(x0,y0,w,30);
   ctx.fillStyle='rgba(255,255,255,.55)';for(let i=0;i<6;i++)circ(x0+14+i*29,y0+15,4),ctx.fill();
   ctx.restore();
   ctx.fillStyle='#f6e9dd';ctx.fillRect(r.x-26,y0+h-2,52,10);
   if(sprOK('f_rug'))sprImg(ctx,'f_rug',r.x+4,r.y+64,46);
   if(sprOK('f_night'))sprImg(ctx,'f_night',r.x-60,r.y-78,44);
   if(sprOK('f_plant'))sprImg(ctx,'f_plant',r.x-62,r.y+74,38);
-  const key=r.state==='dirty'&&sprOK('bed_dirty')?'bed_dirty':'bed'+r.i;
+  const key=r.state==='dirty'&&sprOK('bed_dirty')?'bed_dirty':'bed'+ci(r);
   sprImg(ctx,key,r.x+8,r.y-30,122);
   if(lux>=2&&sprOK('k3_star'))sprImg(ctx,'k3_star',r.x+48,r.y-96,22);
   if(lux>=3&&sprOK('k3_crown'))sprImg(ctx,'k3_crown',r.x+48,r.y-115,18);
@@ -1001,7 +1010,7 @@ function drawRoom(r){
     else{ctx.fillStyle='rgba(255,255,255,.7)';circ(r.x,r.y,26);ctx.fill();if(sprOK('k3_lock'))sprImg(ctx,'k3_lock',r.x,r.y,40);else if(sprOK('k_lock'))sprImg(ctx,'k_lock',r.x,r.y,32);else txt('🔒',r.x,r.y,26,'#000',false,'400');}
     return;
   }
-  if(sprOK('bed'+r.i)){drawRoom3D(r);return;}
+  if(sprOK('bed0')){drawRoom3D(r);return;}
   const lux=ups[4].level;
   ctx.fillStyle=lighten(CARPET[r.i],-25);rr(x0-4,y0-4,w+8,h+8,20);ctx.fill();
   ctx.save();rr(x0,y0,w,h,16);ctx.clip();
@@ -1202,6 +1211,7 @@ function guideTarget(){
   const nl=nextLocked();
   if(nl&&S.coins>=nl.price-nl.paid&&dist(P.x,P.y,nl.x,nl.y+10)>48)return [nl.x,nl.y+10];
   for(const u of ups)if(u.level<u.prices.length&&S.coins>=u.prices[u.level]-u.paid&&dist(P.x,P.y,u.x,u.y)>44)return [u.x,u.y];
+  if(!nextLocked()&&S.coins>=expPrice()-S.expPaid&&dist(P.x,P.y,EXP.x,EXP.y)>50)return [EXP.x,EXP.y];
   for(const f of FAC)if(f.level<3){const zx=f.level?f.ux:f.x,zy=f.level?f.uy:f.y;if(S.coins>=f.prices[f.level]-f.paid&&dist(P.x,P.y,zx,zy)>40)return [zx,zy];}
   return null;
 }
@@ -1210,7 +1220,7 @@ function drawHUD(){
   coin(38,38,14);txt(String(S.coins),60+String(S.coins).length*7,38,24,'#5a3aa6',false);
   heart(132,38,26);txt(String(S.hearts),150+String(S.hearts).length*6,38,20,'#d9567f',false);
   const n=rooms.filter(r=>r.unlocked).length;
-  txt('Hotel Estrelleta',310,28,17,'#7b4bd6',false);
+  txt('Hotel Estrelleta'+(S.floor>1?' · Planta '+S.floor:''),310,28,S.floor>1?15:17,'#7b4bd6',false);
   for(let i=0;i<6;i++)star(265+i*18,51,8,i<n?'#ffb800':'#e3d6f0');
   ctx.fillStyle='#f1e8ff';circ(W-90,38,20);ctx.fill();txt('↺',W-90,39,22,'#7b4bd6',false);
   ctx.fillStyle='#f1e8ff';circ(W-38,38,20);ctx.fill();txt(muted?'🔇':'🔊',W-38,39,18,'#000',false,'400');
@@ -1223,6 +1233,7 @@ function draw(){
   if(camY<60)drawLeisure();
   drawFloor();
   rooms.forEach(drawRoom);
+  if(!nextLocked()){zone(EXP.x,EXP.y,48,S.expPaid,expPrice(),'🏗️','Nova planta '+(S.floor+1),'k3_star');}
   drawDesk();drawPile();
   for(const u of ups){
     if(u.level>=u.prices.length){ctx.fillStyle='rgba(255,255,255,.55)';circ(u.x,u.y,30);ctx.fill();if(u.spr&&sprOK(u.spr))sprImg(ctx,u.spr,u.x,u.y-4,30);else txt(u.icon,u.x,u.y-4,24,'#000',false,'400');txt('MÀX',u.x,u.y+20,12,'#7b4bd6',false);continue;}
