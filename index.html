@@ -748,8 +748,7 @@ cv.addEventListener('pointerdown',e=>{
   initAudio();
   const [wx,wy]=toScreenWorld(e.clientX,e.clientY);
   if(dist(wx,wy,W-38,38)<24){muted=!muted;return;}
-  if(allRooms.length>1&&dist(wx,wy,228,52)<18){setView(view-1);return;}
-  if(allRooms.length>1&&dist(wx,wy,372,52)<18){setView(view+1);return;}
+  if(dist(wx,wy,228,52)<18||dist(wx,wy,372,52)<18){if(allRooms.length>1)setView(view+(wx>300?1:-1));else floaty('🔒 Encara només tens 1 planta',300,camY+140,'#d9567f',20);return;}
   if(dist(wx,wy,W-142,38)<24||dist(wx,wy,140,38)<26){openShop(dist(wx,wy,140,38)<26?'roba':null);return;}
   if(dist(wx,wy,W-90,38)<22){
     if(time<resetArm){resetGame();}else{resetArm=time+2.5;floaty('Toca un altre cop per reiniciar',300,camY+120,'#ff4d8d',20);}
@@ -868,7 +867,7 @@ function update(dt){
       confetti(300,300,90);confetti(300,560,60);fanfare();floaty('🏨 Planta '+S.floor+'!',300,330,'#ff4d8d',36);floaty('Canvia de planta amb ◀ ▶ o l’ascensor',300,380,'#7b4bd6',20);});
     S.expPaid=o.paid;if(o.paid===0)save();}
   if(!inZone)payAcc=0;
-  if(allRooms.length>1){const inE=dist(P.x,P.y,ELV.x,ELV.y+14)<30;if(inE&&!elevIn)setView((view+1)%allRooms.length);elevIn=inE;}
+  {const inE=dist(P.x,P.y,ELV.x,ELV.y+14)<30;if(inE&&!elevIn){if(allRooms.length>1)setView((view+1)%allRooms.length);else floaty(anyLocked()?'🔒 Compra les 6 habitacions i després la planta 2!':'🏗️ Compra la Nova planta al passadís!',300,640,'#d9567f',18);}elevIn=inE;}
 
   // netejadors
   const cl=ups[1].level,nB=cl>=4?3:cl>=3?2:cl>=1?1:0,bsp=cl>=5?190:cl>=2?140:95,bct=cl>=5?.9:cl>=2?1.5:2.8;
@@ -1248,12 +1247,12 @@ function drawHUD(){
   coin(38,38,14);txt(String(S.coins),60+String(S.coins).length*7,38,24,'#5a3aa6',false);
   heart(132,38,26);txt(String(S.hearts),150+String(S.hearts).length*6,38,20,'#d9567f',false);
   const n=rooms.filter(r=>r.unlocked).length;
-  ctx.save();ctx.shadowColor='rgba(123,75,214,.35)';ctx.shadowOffsetY=2;txt('Hotel Estrelleta',300,27,allRooms.length>1?17:20,'#8a5ae0',true);ctx.restore();
-  if(allRooms.length>1){
+  ctx.save();ctx.shadowColor='rgba(123,75,214,.35)';ctx.shadowOffsetY=2;txt('Hotel Estrelleta',300,27,17,'#8a5ae0',true);ctx.restore();
+  {
     for(const [ax,d] of [[228,-1],[372,1]]){const ok=view+d>=0&&view+d<allRooms.length;ctx.fillStyle=ok?'#b48cff':'#eadcff';circ(ax,52,12);ctx.fill();txt(d<0?'◀':'▶',ax,52,12,'#fff',false);
       let w=false;for(let f=view+d;f>=0&&f<allRooms.length;f+=d)if(hasWork(f))w=true;if(w&&Math.sin(time*6)>0){ctx.fillStyle='#ff4d8d';circ(ax+10,42,5);ctx.fill();}}
     txt('Planta '+(view+1)+' de '+allRooms.length,300,52,14,'#d9567f',false);
-  }else for(let i=0;i<6;i++){if(i<n&&sprOK('k3_star'))sprImg(ctx,'k3_star',255+i*18,52,15);else star(255+i*18,52,7,'#e3d6f0');}
+  }
   ctx.fillStyle='#ffe0ec';circ(W-142,38,22);ctx.fill();ctx.strokeStyle='#ff8fb8';ctx.lineWidth=2;ctx.stroke();txt('🛍️',W-142,39,20,'#000',false,'400');if(Math.sin(time*4)>0&&canBuyAny()){ctx.fillStyle='#ff4d8d';circ(W-126,22,5);ctx.fill();}
   ctx.fillStyle='#f1e8ff';circ(W-90,38,20);ctx.fill();txt('↺',W-90,39,22,'#7b4bd6',false);
   ctx.fillStyle='#f1e8ff';circ(W-38,38,20);ctx.fill();txt(muted?'🔇':'🔊',W-38,39,18,'#000',false,'400');
@@ -1267,7 +1266,7 @@ function draw(){
   drawFloor();
   rooms.forEach(drawRoom);
   if(!anyLocked()){zone(EXP.x,EXP.y,48,S.expPaid,expPrice(),'🏗️','Nova planta '+(S.floor+1),'k3_star');}
-  if(allRooms.length>1)drawElev();
+  drawElev();
   drawDesk();drawPile();
   for(const u of ups){
     if(u.level>=u.prices.length){ctx.fillStyle='rgba(255,255,255,.55)';circ(u.x,u.y,30);ctx.fill();if(u.spr&&sprOK(u.spr))sprImg(ctx,u.spr,u.x,u.y-4,30);else txt(u.icon,u.x,u.y-4,24,'#000',false,'400');badge('MÀX',u.x,u.y+24);continue;}
