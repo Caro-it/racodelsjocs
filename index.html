@@ -688,9 +688,9 @@ function load(){
   let d=null;try{d=JSON.parse(localStorage.getItem(KEY));}catch(e){}
   if(!d)return;
   S.coins=d.coins||0;S.pile=d.pile||0;S.complete=!!d.complete;S.hearts=d.hearts||0;S.floor=d.floor||1;S.expPaid=d.expPaid||0;S.owned=d.owned||{};S.outfit=d.outfit||'';S.pet=d.pet||'';
-  const FL=d.fl||[d.rooms||[]];allRooms.length=0;
+  const FL=d.fl||((d.floor||1)>1?Array.from({length:d.floor-1},()=>Array.from({length:6},()=>({u:1,p:0}))).concat([d.rooms||[]]):[d.rooms||[]]);allRooms.length=0;
   FL.forEach((fl,f)=>{const R=mkFloor(f);fl.forEach((s,i)=>{if(R[i]){R[i].unlocked=!!s.u||i===0;R[i].paid=s.p||0;}});allRooms.push(R);});
-  S.floor=allRooms.length;view=Math.min(d.view||0,allRooms.length-1);rooms=allRooms[view];
+  S.floor=allRooms.length;view=Math.min(d.fl?(d.view||0):allRooms.length-1,allRooms.length-1);rooms=allRooms[view];S.expPaid=Math.min(S.expPaid,400*S.floor-1);
   (d.ups||[]).forEach((s,i)=>{if(ups[i]){ups[i].level=Math.min(s.l||0,ups[i].prices.length);ups[i].paid=s.p||0;}});
   (d.fac||[]).forEach((s,i)=>{if(FAC[i]){FAC[i].level=Math.min(s.l||0,3);FAC[i].paid=s.p||0;FAC[i].pile=s.c||0;}});
 }
@@ -729,7 +729,8 @@ function sparkle(x,y){for(let i=0;i<12;i++)parts.push({k:'s',x,y,vx:rand(-90,90)
 function finishClean(r){r.state='clean';r.clean=0;r.claimed=false;bots.forEach(b=>{if(b.target===r)b.target=null;});if(r.f===view){sparkle(r.x,r.y);ding();}}
 function nextLocked(){return rooms.find(r=>!r.unlocked);}
 function payInto(obj,price,dt,done){
-  if(S.coins<=0||obj.paid>=price)return;
+  if(obj.paid>=price){done();return;}
+  if(S.coins<=0)return;
   payAcc+=dt;const step=Math.max(1,Math.ceil(price/40));
   while(payAcc>0.035&&S.coins>0&&obj.paid<price){
     payAcc-=0.035;const n=Math.min(step,S.coins,price-obj.paid);S.coins-=n;obj.paid+=n;coinSound();
