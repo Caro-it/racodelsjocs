@@ -10,6 +10,7 @@ Sense anuncis · Sense compres · Sense comptes ni dades personals.
 - 🧩 Blocs Dolços – encaixa peces i completa files
 - 🃏 Memòria Kawaii – troba les parelles
 - 🌠 Atrapa Estrelles – atrapa estrelles amb el núvol
+- 🎅 El Pare Noel – reparteix regals amb el trineu i decora l’rbre de Nadal
 
 ## Tecnologia
 HTML, CSS i JavaScript (Canvas), en un sol fitxer.
