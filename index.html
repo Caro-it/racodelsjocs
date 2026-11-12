@@ -1561,7 +1561,19 @@ function podium(){ctx.fillStyle='rgba(120,60,160,.15)';ctx.beginPath();ctx.ellip
   ctx.fillStyle='#ffeef6';ctx.beginPath();ctx.ellipse(300,672,160,30,0,0,7);ctx.fill();ctx.strokeStyle='#ffb3cf';ctx.lineWidth=3;ctx.stroke();}
 function dollBox(){const k=D.look,i=img(k);const h=k==='l_princess'||k==='l_mermaid'?560:540;const w=ok(k)?h*i.naturalWidth/i.naturalHeight:200;return {x:300-w/2,y:680-h,w,h};}
 function drawImg(k,x,y,w,h){if(ok(k))ctx.drawImage(img(k),x-w/2,y-h/2,w,h);}
-function accSize(k){const a=ACC[k],i=img(k);const w=a[3];return [w,ok(k)?w*i.naturalHeight/i.naturalWidth:w];}
+const FIT={base:[132,20,135,110,190,222,375,85,375],l_astro:[131,30,145,110,205,241,355,31,350],l_ballet:[126,45,155,115,210,236,355,16,350],l_beach:[132,25,135,115,195,240,345,15,340],
+ l_chef:[122,15,175,110,235,232,370,12,370],l_cowgirl:[131,30,160,110,220,246,360,16,355],l_fairy:[140,20,130,110,190,250,350,15,350],l_kimono:[127,40,140,110,195,240,345,10,345],
+ l_mermaid:[125,30,130,115,195,245,340,10,340],l_party:[125,20,190,160,280,220,395,35,390],l_princess:[167,40,150,105,210,280,370,55,370],l_pyjama:[113,20,125,105,185,213,355,13,350],
+ l_rock:[115,20,125,105,185,215,355,10,355],l_school:[125,20,195,175,270,240,390,10,390],l_sport:[128,25,195,180,270,240,390,10,390],l_summer:[124,30,210,190,290,222,400,7,400],l_winter:[103,25,165,105,220,200,375,10,375]};
+const SLOT={a_tiara:['cap',0,-10],a_flowers:['cap',0,-8],a_catears:['cap',0,-12],a_hat:['cap',0,-20],a_heartgl:['ulls',0,-16],a_roundgl:['ulls',0,-7],a_scarf:['coll',0,62],
+ a_bag:['lh',0,15],a_wand:['rh',0,-30],a_backpack:['esq',-95,100],a_bwings:['ales',0,38],a_awings:['ales',0,28]};
+function fitOf(){return FIT[D.look]||FIT.base;}
+function accScale(k){const f=fitOf(),t=SLOT[k][0],r=f[3]/110;return t==='cap'||t==='ulls'?r:t==='coll'?.5+r*.5:1;}
+function slotPos(k){const f=fitOf(),[t,ox,oy]=SLOT[k],i=img(D.look),h=D.look==='l_princess'||D.look==='l_mermaid'?560:540,s=h/560,nw=ok(D.look)?i.naturalWidth:264;
+  let x,y;if(t==='cap'){x=f[0];y=f[1];}else if(t==='ulls'){x=f[0];y=f[2];}else if(t==='coll'||t==='ales'){x=f[0];y=f[4];}else if(t==='esq'){x=f[0];y=f[4];}else if(t==='rh'){x=f[5];y=f[6];}else{x=f[7];y=f[8];}
+  x+=ox*(t==='cap'||t==='ulls'?accScale(k):1);y+=oy*(t==='cap'||t==='ulls'?accScale(k):1);return [Math.round(300-nw*s/2+x*s),Math.round(680-h+y*s)];}
+function refit(){for(const k in D.acc)D.acc[k]=slotPos(k);}
+function accSize(k){const a=ACC[k],i=img(k);const w=a[3]*accScale(k);return [w,ok(k)?w*i.naturalHeight/i.naturalWidth:w];}
 function draw(){
   ctx.setTransform(2,0,0,2,0,0);drawBg();if(show){drawShow();return;}podium();
   const bob=Math.sin(t*2.2)*4,sc=1+pop*.06;
@@ -1620,19 +1632,19 @@ root.addEventListener('click',e=>{
   const it=e.target.closest('.d2it[data-k]');if(it){const k=it.dataset.k;
     const cost=tab==='looks'?LOOKS.find(l=>l[0]===k)[2]:tab==='acc'?ACC[k][1]:PETS.find(p=>p[0]===k)[2];
     if(cost>0&&!D.own[k]){if(D.stars<cost){modal(`<h2>Necessites més ⭐</h2><p>Et calen <b>${cost}</b> estrelles. Fes desfilades i reptes per guanyar-ne!</p><button class="d2btn" data-x="1">D’acord</button>`);return;}D.stars-=cost;D.own[k]=1;sfx(()=>fanfare());}
-    if(tab==='looks'){D.look=k;pop=1;burst(300,380);}
-    if(tab==='acc'){if(D.acc[k])delete D.acc[k];else{D.acc[k]=ACC[k][2].slice();burst(ACC[k][2][0],ACC[k][2][1],12);}}
+    if(tab==='looks'){D.look=k;refit();pop=1;burst(300,380);}
+    if(tab==='acc'){if(D.acc[k])delete D.acc[k];else{D.acc[k]=slotPos(k);burst(D.acc[k][0],D.acc[k][1],12);}}
     if(tab==='pets'){D.pet=D.pet===k?'':k;}
     sfx(()=>ding());save();render();return;}
   const a=e.target.closest('[data-a]');if(!a)return;const act=a.dataset.a;
-  if(act==='rand'){const own=LOOKS.filter(l=>l[2]===0||D.own[l[0]]);D.look=own[Math.floor(Math.random()*own.length)][0];D.acc={};const acs=Object.keys(ACC).filter(k=>ACC[k][1]===0||D.own[k]);acs.sort(()=>Math.random()-.5).slice(0,2).forEach(k=>D.acc[k]=ACC[k][2].slice());const bgs=Object.keys(BGS);D.bg=bgs[Math.floor(Math.random()*bgs.length)];pop=1;burst(300,380);sfx(()=>swish());save();render();}
+  if(act==='rand'){const own=LOOKS.filter(l=>l[2]===0||D.own[l[0]]);D.look=own[Math.floor(Math.random()*own.length)][0];D.acc={};const acs=Object.keys(ACC).filter(k=>ACC[k][1]===0||D.own[k]);acs.sort(()=>Math.random()-.5).slice(0,2).forEach(k=>D.acc[k]=slotPos(k));const bgs=Object.keys(BGS);D.bg=bgs[Math.floor(Math.random()*bgs.length)];pop=1;burst(300,380);sfx(()=>swish());save();render();}
   if(act==='clear'){D.acc={};D.pet='';save();render();}
   if(act==='show')startShow();
   if(act==='photo'){try{const c=document.createElement('canvas');c.width=300;c.height=380;c.getContext('2d').drawImage(cv,0,0,300,380);D.album.push(c.toDataURL('image/jpeg',.7));if(D.album.length>8)D.album.shift();save();
     const f=$q('#d2flash');f.style.opacity=1;setTimeout(()=>f.style.opacity=0,150);sfx(()=>ding());}catch(er){modal('<h2>Ups!</h2><p>No s’ha pogut fer la foto.</p><button class="d2btn" data-x="1">D’acord</button>');}}
   if(act==='album')modal(`<h2>📖 El meu àlbum</h2>${D.album.length?`<div class="d2alb">${D.album.slice().reverse().map(u=>`<img src="${u}" alt="">`).join('')}</div>`:'<p>Encara no hi ha fotos. Toca 📸 per fer-ne!</p>'}<button class="d2btn" data-x="1">Tancar</button>`);
 });
-function open(){render();}
+function open(){if(!D.fit2){D.fit2=1;const i=img(D.look);i.complete?refit():i.addEventListener("load",refit,{once:true});}render();}
 function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(current==='dress2'){upd(dt);draw();}requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
 return {open,_D:D,_render:render};
