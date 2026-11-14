@@ -1635,9 +1635,11 @@ function drawShow(){const p=Math.min(1,show.t/2.2);
     if(typeof SPR!=='undefined'&&SPR[k]&&SPR[k].complete){const im=SPR[k],h=60,w=h*im.naturalWidth/im.naturalHeight;ctx.drawImage(im,x-w/2,y-40,w,h);}
     const st=show.s.stars;ctx.font='700 22px Fredoka,system-ui';ctx.textAlign='center';ctx.fillStyle='#ffb800';ctx.fillText('★'.repeat(Math.max(1,st-(i===1&&st>1?0:0))),x,y+38);});
   if(Math.random()<.4)burst(Math.random()*W,0,3);drawSparks();}
-function finishShow(){const s=show.s;let win=s.stars;if(s.full&&!D.done[D.reto%RETOS.length]){win+=s.r.p;D.done[D.reto%RETOS.length]=1;}
+/* premi del repte: la 1a vegada la meitat del valor (8-10 ⭐), les següents una quarta part (4-5 ⭐) — es pot repetir sempre */
+const premi=r=>D.done[RETOS.indexOf(r)]?Math.round(r.p/4):Math.round(r.p/2);
+function finishShow(){const s=show.s;let win=s.stars,bonus=0;const first=!D.done[D.reto%RETOS.length];if(s.full){bonus=premi(s.r);win+=bonus;D.done[D.reto%RETOS.length]=(D.done[D.reto%RETOS.length]||0)+1;}
   D.stars+=win;D.bg=show.bg;if(s.full)D.reto++;save();sfx(()=>ding());
-  modal(`<h2>${s.full?'🏆 Repte superat!':'✨ Quina desfilada!'}</h2><p class="d2big">${'⭐'.repeat(s.stars)}</p><p>Has guanyat <b>${win}</b> estrelles${s.full&&win>s.stars?' (inclou el premi del repte!)':''}</p><p class="d2hint">⭐ per desfilar · ${s.n>=2?'⭐ per complir gairebé tot el repte':'☆ compleix 2 coses del repte'} · ${s.items>=3?'⭐ per portar 3 coses o més':'☆ posa’t 3 coses (look, accessoris, mascota)'}${s.full&&win===s.stars?'<br>Aquest repte ja l’havies superat: el premi gran només es dona una vegada.':''}</p>${s.full?'':`<p class="d2hint">Per superar el repte: ${s.r.d}</p>`}<button class="d2btn" data-x="close">Seguir vestint</button>`);
+  modal(`<h2>${s.full?'🏆 Repte superat!':'✨ Quina desfilada!'}</h2><p class="d2big">${'⭐'.repeat(s.stars)}</p><p>Has guanyat <b>${win}</b> estrelles${bonus?` (${s.stars} de la desfilada + ${bonus} del repte)`:''}</p><p class="d2hint">⭐ per desfilar · ${s.n>=2?'⭐ per complir gairebé tot el repte':'☆ compleix 2 coses del repte'} · ${s.items>=3?'⭐ per portar 3 coses o més':'☆ posa’t 3 coses (look, accessoris, mascota)'}${s.full&&!first?'<br>Repte repetit: premi de repetició.':''}</p>${s.full?'':`<p class="d2hint">Per superar el repte: ${s.r.d}</p>`}<button class="d2btn" data-x="close">Seguir vestint</button>`);
   show=null;render();}
 
 /* ---- UI ---- */
@@ -1654,7 +1656,7 @@ function render(){
   if(tab==='bg')h=Object.entries(BGS).map(([k,b])=>`<div class="d2it${D.bg===k?' on':''}" data-bg="${k}"><div class="d2pic" style="background:${BGIMG[k]?`url(img/dress/${BGIMG[k]}.webp) center/cover`:`linear-gradient(${b[1]},${b[2]})`}"></div><b>${b[0]}</b><span class="d2ok">${D.bg===k?'Actiu':'Posar'}</span></div>`).join('');
   $q('#d2grid').innerHTML=h;
   const r=RETOS[D.reto%RETOS.length],n=r.c.filter(f=>f()).length;
-  $q('#d2reto').innerHTML=`<div class="d2rh"><span>🏆</span><div><b>Repte: ${r.t}</b><small>${r.d}</small></div><span class="d2pc">${Math.round(n/r.c.length*100)}%</span></div><div class="d2bar"><i style="width:${n/r.c.length*100}%"></i></div><div class="d2rf">${n} de ${r.c.length} llestos · Premi: +${r.p} ⭐</div>`;
+  $q('#d2reto').innerHTML=`<div class="d2rh"><span>🏆</span><div><b>Repte: ${r.t}</b><small>${r.d}</small></div><span class="d2pc">${Math.round(n/r.c.length*100)}%</span></div><div class="d2bar"><i style="width:${n/r.c.length*100}%"></i></div><div class="d2rf">${n} de ${r.c.length} llestos · Premi: +${premi(r)} ⭐${D.done[RETOS.indexOf(r)]?' (repetit)':''}</div>`;
   $q('#d2bgname').textContent=BGS[D.bg][0];
 }
 root.addEventListener('click',e=>{
