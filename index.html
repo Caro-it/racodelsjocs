@@ -1573,10 +1573,13 @@ const FIT={base:[132,20,135,110,190,222,375,85,375],l_astro:[131,30,145,110,205,
  l_chef:[122,15,175,110,235,232,370,12,370],l_cowgirl:[131,30,160,110,220,246,360,16,355],l_fairy:[140,20,130,110,190,250,350,15,350],l_kimono:[127,40,140,110,195,240,345,10,345],
  l_mermaid:[125,30,130,115,195,245,340,10,340],l_party:[125,20,190,160,280,220,395,35,390],l_princess:[167,40,150,105,210,280,370,55,370],l_pyjama:[113,20,125,105,185,213,355,13,350],
  l_rock:[115,20,125,105,185,215,355,10,355],l_school:[125,20,195,175,270,240,390,10,390],l_sport:[128,25,195,180,270,240,390,10,390],l_summer:[124,30,210,190,290,222,400,7,400],l_winter:[103,25,165,105,220,200,375,10,375]};
-const SLOT={a_tiara:['cap',0,10],a_flowers:['cap',0,8],a_catears:['cap',0,14],a_hat:['cap',0,26],a_heartgl:['ulls',0,-12],a_roundgl:['ulls',0,-5],a_scarf:['coll',0,62],
+const SLOT={a_tiara:['cap',0,10],a_flowers:['cap',0,13],a_catears:['cap',0,28],a_hat:['cap',0,26],a_heartgl:['ulls',0,-12],a_roundgl:['ulls',0,-5],a_scarf:['coll',0,62],
  a_bag:['lh',0,15],a_wand:['rh',0,-30],a_backpack:['esq',-95,100],a_bwings:['ales',0,38],a_awings:['ales',0,28]};
 const BUSY={l_chef:['cap'],l_beach:['cap'],l_winter:['cap'],l_cowgirl:['cap'],l_astro:['cap','ulls'],l_rock:['ulls']};
 const blocked=k=>(BUSY[D.look]||[]).includes(SLOT[k][0]);
+/* accessoris que s’amaguen en part darrere del cabell: [tall, quina part va darrere] */
+const SPLIT={a_catears:[.6,'bot'],a_flowers:[.34,'top']};
+function drawPart(k,x,y,w,h,y0,y1){ctx.save();ctx.beginPath();ctx.rect(x-w/2-4,y-h/2+y0*h,w+8,(y1-y0)*h+1);ctx.clip();drawImg(k,x,y,w,h);ctx.restore();}
 function fitOf(){return FIT[D.look]||FIT.base;}
 function accScale(k){const f=fitOf(),t=SLOT[k][0],r=f[3]/110;return t==='cap'||t==='ulls'?r:t==='coll'?.5+r*.5:1;}
 function slotPos(k){const f=fitOf(),[t,ox,oy]=SLOT[k],i=img(D.look),h=D.look==='l_princess'||D.look==='l_mermaid'?560:540,s=h/560,nw=ok(D.look)?i.naturalWidth:264;
@@ -1587,9 +1590,13 @@ function accSize(k){const a=ACC[k],i=img(k);const w=a[3]*accScale(k);return [w,o
 function draw(){
   ctx.setTransform(2,0,0,2,0,0);drawBg();if(show){drawShow();return;}podium();
   const bob=Math.sin(t*2.2)*4,sc=1+pop*.06;ctx.save();ctx.translate(300,680);ctx.scale(sc,sc);ctx.translate(-300,-680);
+  for(const k in SPLIT)if(D.acc[k]&&!blocked(k)&&!(drag&&drag.k===k)){const [x,y]=D.acc[k],[w,h]=accSize(k),[c,b]=SPLIT[k];b==='bot'?drawPart(k,x,y+bob,w,h,c,1):drawPart(k,x,y+bob,w,h,0,c);}
   for(const k of ['a_bwings','a_awings','a_backpack'])if(D.acc[k]&&!blocked(k)){const [x,y]=D.acc[k],[w,h]=accSize(k);ctx.save();ctx.translate(x,y+bob);ctx.rotate(k!=='a_backpack'?Math.sin(t*3)*.03:0);drawImg(k,0,0,w,h);ctx.restore();}
   const b=dollBox();ctx.save();ctx.translate(300,680);ctx.scale(1,1-Math.sin(t*2.2)*.008);if(ok(D.look))ctx.drawImage(img(D.look),-b.w/2,-b.h+bob,b.w,b.h);ctx.restore();
-  for(const k in D.acc){if(k==='a_bwings'||k==='a_awings'||k==='a_backpack'||blocked(k))continue;const [x,y]=D.acc[k],[w,h]=accSize(k);drawImg(k,x,y+bob,w,h);}ctx.restore();
+  for(const k in D.acc){if(k==='a_bwings'||k==='a_awings'||k==='a_backpack'||blocked(k))continue;const [x,y]=D.acc[k],[w,h]=accSize(k);
+    const cap=SLOT[k][0]==='cap'&&!(drag&&drag.k===k);if(cap){ctx.save();ctx.shadowColor='rgba(90,40,100,.3)';ctx.shadowBlur=7;ctx.shadowOffsetY=3;}
+    if(SPLIT[k]&&cap){const [c,b]=SPLIT[k];b==='bot'?drawPart(k,x,y+bob,w,h,0,c):drawPart(k,x,y+bob,w,h,c,1);}else drawImg(k,x,y+bob,w,h);
+    if(cap)ctx.restore();}ctx.restore();
   if(D.pet&&ok(D.pet)){const i=img(D.pet),h=120,w=h*i.naturalWidth/i.naturalHeight,hop=Math.abs(Math.sin(t*3))*10;ctx.drawImage(i,470-w/2,690-h-hop,w,h);}
   drawSparks();
 }
