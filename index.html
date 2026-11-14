@@ -1539,12 +1539,14 @@ const PETS=[['p_cat','Gateta',4],['p_dog','Gosset',4],['p_bunny','Conillet',5],[
 const BGS={boutique:['Botiga','#ffe3f1','#e9dcff'],platja:['Platja','#bfe9ff','#fff1c9'],festa:['Festa','#e5d4ff','#ffd3ea'],hivern:['Neu','#e8f4ff','#ffffff'],jardi:['Jardí','#d9f5d2','#fff6c9'],passarela:['Passarel·la','#ffd3ea','#b9a0f5'],camerino:['Camerino','#ffe3f1','#ffd3ea']};
 const BGIMG={boutique:'bg_boutique',platja:'bg_platja',festa:'bg_festa',hivern:'bg_hivern',jardi:'bg_jardi',passarela:'bg_passarela',camerino:'bg_camerino'};
 const RETOS=[
- {t:'Festa d’Estiu',d:'Look d’estiu, fons de platja i un barret o ulleres.',c:[()=>tags().includes('estiu'),()=>D.bg==='platja',()=>D.acc.a_hat||D.acc.a_heartgl||D.acc.a_roundgl],p:15},
+ {t:'Festa d’Estiu',d:'Look d’estiu, fons de platja i un barret o ulleres.',c:[()=>tags().includes('estiu'),()=>D.bg==='platja',()=>porta('cap',['a_hat'])||porta('ulls')],p:15},
  {t:'Ball de Princeses',d:'Look de festa, una diadema i fons de festa.',c:[()=>tags().includes('festa'),()=>D.acc.a_tiara||D.acc.a_flowers,()=>D.bg==='festa'],p:15},
  {t:'Dia de Neu',d:'Look d’hivern, una bufanda i fons de neu.',c:[()=>tags().includes('neu'),()=>D.acc.a_scarf,()=>D.bg==='hivern'],p:15},
  {t:'Somni Màgic',d:'Look màgic, ales o vareta i fons de jardí.',c:[()=>tags().includes('magia'),()=>D.acc.a_wand||D.acc.a_bwings||D.acc.a_awings,()=>D.bg==='jardi'],p:20},
- {t:'Estrella del Rock',d:'Look rock, ulleres i la passarel·la.',c:[()=>tags().includes('rock'),()=>D.acc.a_heartgl||D.acc.a_roundgl,()=>D.bg==='passarela'],p:20},
+ {t:'Estrella del Rock',d:'Look rock, ulleres i la passarel·la.',c:[()=>tags().includes('rock'),()=>porta('ulls'),()=>D.bg==='passarela'],p:20},
  {t:'Nit de Pijames',d:'Pijama, una mascota i orelles de gat.',c:[()=>tags().includes('nit'),()=>D.pet,()=>D.acc.a_catears],p:15}];
+/* compta també el que el look ja porta de sèrie (p. ex. el Rock ja porta ulleres d'estrella, el de Platja ja porta barret) */
+const porta=(slot,only)=>(BUSY[D.look]||[]).includes(slot)||Object.keys(D.acc).some(k=>SLOT[k]&&SLOT[k][0]===slot&&(!only||only.includes(k)));
 const tags=()=>(LOOKS.find(l=>l[0]===D.look)||[0,0,0,[]])[3];
 const IM={};const img=k=>{if(!IM[k]){const i=new Image();i.src=k.startsWith('p_')&&typeof SPR!=='undefined'&&SPR[k]?SPR[k].src:'img/dress/'+k+'.webp';IM[k]=i;}return IM[k];};
 const ok=k=>{const i=img(k);return i.complete&&i.naturalWidth>0;};
@@ -1623,7 +1625,7 @@ cv.addEventListener('pointermove',e=>{if(!drag)return;const [x,y]=toW(e);D.acc[d
 cv.addEventListener('pointerup',()=>{if(drag){drag=null;save();}});
 
 /* ---- desfilada ---- */
-function score(){const r=RETOS[D.reto%RETOS.length],n=r.c.filter(f=>f()).length,acc=Object.keys(D.acc).filter(k=>!blocked(k)).length,items=acc+(D.pet?1:0)+(D.look!=='base'?1:0);return {r,n,acc,items,full:n===r.c.length,stars:Math.min(3,1+(n>=2?1:0)+(items>=3?1:0))};}
+function score(){const r=RETOS[D.reto%RETOS.length],n=r.c.filter(f=>f()).length,acc=Object.keys(D.acc).filter(k=>!blocked(k)).length,items=acc+(D.pet?1:0)+(D.look!=='base'?1:0)+(BUSY[D.look]||[]).length;return {r,n,acc,items,full:n===r.c.length,stars:Math.min(3,1+(n>=2?1:0)+(items>=3?1:0))};}
 function startShow(){if(show)return;show={t:0,s:score(),bg:D.bg};D.bg='passarela';sfx(()=>fanfare());}
 function drawShow(){const p=Math.min(1,show.t/2.2);
   ctx.fillStyle='rgba(60,30,90,.12)';ctx.fillRect(0,0,W,H);
