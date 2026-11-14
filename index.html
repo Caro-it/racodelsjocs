@@ -530,15 +530,21 @@ body,button,input,select,textarea{font-family:'Fredoka',system-ui,sans-serif}
 <!-- ============ VESTIDOR 3D ============ -->
 <div id="dress2" class="screen">
 <style>
-#dress2{background:linear-gradient(#fff4fb,#f6eeff);overflow:auto;font-family:Fredoka,system-ui,sans-serif;color:#5a3aa6}
-#dress2 .d2w{max-width:480px;margin:0 auto;padding:12px 12px 30px;display:flex;flex-direction:column;gap:12px}
+#dress2{background:linear-gradient(#fff4fb,#f6eeff);overflow:hidden;font-family:Fredoka,system-ui,sans-serif;color:#5a3aa6}
+#dress2 .d2w{max-width:1200px;height:100%;margin:0 auto;padding:10px 12px;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px 14px;box-sizing:border-box}
+#dress2 .d2hd{grid-column:1/-1}
+#dress2 .d2stage{align-self:start}
+#dress2 .d2panel{overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:12px;padding:2px 4px 20px;min-height:0;-webkit-overflow-scrolling:touch}
+#dress2 .d2panel>*{flex-shrink:0}#dress2 .d2tabs{position:sticky;top:0;z-index:2;background:#fbf2ff;border-radius:16px;padding:4px!important}
+#dress2 .d2it.no{opacity:.5}#dress2 .d2it.no .d2ok{background:#eee;color:#888}
+@media (max-width:700px){#dress2 .d2sec{display:none!important}#dress2 .d2tabs{display:grid!important;grid-template-columns:1fr 1fr;gap:5px!important}#dress2 .d2tab{padding:7px 2px!important;font-size:11.5px!important;min-width:0;white-space:normal;line-height:1.1}#dress2 canvas{height:auto!important;width:min(50vw,calc((100dvh - 90px) * 600 / 760))!important}#dress2 .d2hd .d2tt small{display:none}#dress2 #d2grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))!important;gap:8px!important}#dress2 .d2pic{height:84px!important}#dress2 .d2pic img{max-height:76px!important}#dress2 .d2on{display:none}#dress2 .d2side{right:12px;top:12px;gap:6px}#dress2 .d2side button{width:34px;height:34px;font-size:16px}#dress2 .d2tt b{font-size:20px}#dress2 .d2it b{font-size:13px!important}}
 #dress2 .d2hd{display:flex;align-items:center;gap:10px}
 #dress2 .d2home{width:46px;height:46px;border-radius:50%;border:3px solid #fff;background:linear-gradient(#fff,#f5edff);box-shadow:0 4px 0 #e3d2f7;font-size:22px;cursor:pointer}
 #dress2 .d2tt{flex:1;line-height:1.05}#dress2 .d2tt small{display:block;color:#b48cff;font-size:13px;font-weight:600}
 #dress2 .d2tt b{font-size:26px;font-weight:700;background:linear-gradient(90deg,#ff6fa5,#b48cff);-webkit-background-clip:text;background-clip:text;color:transparent}
 #dress2 .d2pill{background:#fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:17px;box-shadow:0 3px 0 #ede0f7;display:flex;gap:5px;align-items:center}
 #dress2 .d2stage{position:relative;background:linear-gradient(#f3e8ff,#e8dcff);border-radius:30px;padding:10px;box-shadow:0 8px 0 #e0cff7}
-#dress2 canvas{width:100%;aspect-ratio:600/760;border-radius:22px;display:block;touch-action:none;background:#fff}
+#dress2 canvas{height:min(calc(100dvh - 100px),calc(52vw * 760 / 600));width:auto;aspect-ratio:600/760;border-radius:22px;display:block;touch-action:none;background:#fff}
 #dress2 .d2side{position:absolute;right:20px;top:20px;display:flex;flex-direction:column;gap:8px}
 #dress2 .d2side button{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.9);box-shadow:0 3px 8px rgba(120,70,160,.2);font-size:20px;cursor:pointer}
 #dress2 .d2on{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);background:#fff;border-radius:999px;padding:6px 16px;font-size:14px;font-weight:600;box-shadow:0 3px 0 #ede0f7;white-space:nowrap}
@@ -578,12 +584,14 @@ body,button,input,select,textarea{font-family:'Fredoka',system-ui,sans-serif}
   <div class="d2stage"><canvas id="d2c"></canvas><div id="d2flash"></div>
     <div class="d2side"><button data-a="rand" title="Look sorpresa">🎲</button><button data-a="clear" title="Treure accessoris">🧹</button><button data-a="photo" title="Fer foto">📸</button></div>
     <div class="d2on">🎨 Fons: <b id="d2bgname"></b> · arrossega els accessoris!</div></div>
+  <div class="d2panel">
   <div class="d2sec"><span>ARMARI MÀGIC</span><span>4 categories</span></div>
   <div class="d2tabs"><button class="d2tab" data-t="looks">👗 Looks</button><button class="d2tab" data-t="acc">👑 Accessoris</button><button class="d2tab" data-t="pets">🐾 Mascotes</button><button class="d2tab" data-t="bg">🎨 Fons</button></div>
   <div id="d2grid"></div>
   <div class="d2reto" id="d2reto"></div>
   <button class="d2go" data-a="show">✨ Desfilada a la Passarel·la! ✨</button>
   <div class="d2bot"><button data-a="photo">📸 Fer foto</button><button data-a="album">📖 El meu àlbum</button></div>
+  </div>
 </div>
 <div id="d2modal"></div>
 </div>
@@ -1565,8 +1573,10 @@ const FIT={base:[132,20,135,110,190,222,375,85,375],l_astro:[131,30,145,110,205,
  l_chef:[122,15,175,110,235,232,370,12,370],l_cowgirl:[131,30,160,110,220,246,360,16,355],l_fairy:[140,20,130,110,190,250,350,15,350],l_kimono:[127,40,140,110,195,240,345,10,345],
  l_mermaid:[125,30,130,115,195,245,340,10,340],l_party:[125,20,190,160,280,220,395,35,390],l_princess:[167,40,150,105,210,280,370,55,370],l_pyjama:[113,20,125,105,185,213,355,13,350],
  l_rock:[115,20,125,105,185,215,355,10,355],l_school:[125,20,195,175,270,240,390,10,390],l_sport:[128,25,195,180,270,240,390,10,390],l_summer:[124,30,210,190,290,222,400,7,400],l_winter:[103,25,165,105,220,200,375,10,375]};
-const SLOT={a_tiara:['cap',0,-10],a_flowers:['cap',0,-8],a_catears:['cap',0,-12],a_hat:['cap',0,-20],a_heartgl:['ulls',0,-16],a_roundgl:['ulls',0,-7],a_scarf:['coll',0,62],
+const SLOT={a_tiara:['cap',0,10],a_flowers:['cap',0,8],a_catears:['cap',0,14],a_hat:['cap',0,26],a_heartgl:['ulls',0,-12],a_roundgl:['ulls',0,-5],a_scarf:['coll',0,62],
  a_bag:['lh',0,15],a_wand:['rh',0,-30],a_backpack:['esq',-95,100],a_bwings:['ales',0,38],a_awings:['ales',0,28]};
+const BUSY={l_chef:['cap'],l_beach:['cap'],l_winter:['cap'],l_cowgirl:['cap'],l_astro:['cap','ulls'],l_rock:['ulls']};
+const blocked=k=>(BUSY[D.look]||[]).includes(SLOT[k][0]);
 function fitOf(){return FIT[D.look]||FIT.base;}
 function accScale(k){const f=fitOf(),t=SLOT[k][0],r=f[3]/110;return t==='cap'||t==='ulls'?r:t==='coll'?.5+r*.5:1;}
 function slotPos(k){const f=fitOf(),[t,ox,oy]=SLOT[k],i=img(D.look),h=D.look==='l_princess'||D.look==='l_mermaid'?560:540,s=h/560,nw=ok(D.look)?i.naturalWidth:264;
@@ -1576,10 +1586,10 @@ function refit(){for(const k in D.acc)D.acc[k]=slotPos(k);}
 function accSize(k){const a=ACC[k],i=img(k);const w=a[3]*accScale(k);return [w,ok(k)?w*i.naturalHeight/i.naturalWidth:w];}
 function draw(){
   ctx.setTransform(2,0,0,2,0,0);drawBg();if(show){drawShow();return;}podium();
-  const bob=Math.sin(t*2.2)*4,sc=1+pop*.06;
-  for(const k of ['a_bwings','a_awings','a_backpack'])if(D.acc[k]){const [x,y]=D.acc[k],[w,h]=accSize(k);ctx.save();ctx.translate(x,y+bob);ctx.rotate(k!=='a_backpack'?Math.sin(t*3)*.03:0);drawImg(k,0,0,w,h);ctx.restore();}
-  const b=dollBox();ctx.save();ctx.translate(300,680);ctx.scale(sc,sc*(1-Math.sin(t*2.2)*.008));if(ok(D.look))ctx.drawImage(img(D.look),-b.w/2,-b.h+bob,b.w,b.h);ctx.restore();
-  for(const k in D.acc){if(k==='a_bwings'||k==='a_awings'||k==='a_backpack')continue;const [x,y]=D.acc[k],[w,h]=accSize(k);drawImg(k,x,y+bob,w,h);}
+  const bob=Math.sin(t*2.2)*4,sc=1+pop*.06;ctx.save();ctx.translate(300,680);ctx.scale(sc,sc);ctx.translate(-300,-680);
+  for(const k of ['a_bwings','a_awings','a_backpack'])if(D.acc[k]&&!blocked(k)){const [x,y]=D.acc[k],[w,h]=accSize(k);ctx.save();ctx.translate(x,y+bob);ctx.rotate(k!=='a_backpack'?Math.sin(t*3)*.03:0);drawImg(k,0,0,w,h);ctx.restore();}
+  const b=dollBox();ctx.save();ctx.translate(300,680);ctx.scale(1,1-Math.sin(t*2.2)*.008);if(ok(D.look))ctx.drawImage(img(D.look),-b.w/2,-b.h+bob,b.w,b.h);ctx.restore();
+  for(const k in D.acc){if(k==='a_bwings'||k==='a_awings'||k==='a_backpack'||blocked(k))continue;const [x,y]=D.acc[k],[w,h]=accSize(k);drawImg(k,x,y+bob,w,h);}ctx.restore();
   if(D.pet&&ok(D.pet)){const i=img(D.pet),h=120,w=h*i.naturalWidth/i.naturalHeight,hop=Math.abs(Math.sin(t*3))*10;ctx.drawImage(i,470-w/2,690-h-hop,w,h);}
   drawSparks();
 }
@@ -1590,7 +1600,7 @@ function upd(dt){t+=dt;pop=Math.max(0,pop-dt*3);for(const s of sparks){s.t+=dt*1
 
 /* ---- arrossegar accessoris ---- */
 const toW=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H];};
-cv.addEventListener('pointerdown',e=>{const [x,y]=toW(e);const ks=Object.keys(D.acc).reverse();for(const k of ks){const [ax,ay]=D.acc[k],[w,h]=accSize(k);if(Math.abs(x-ax)<w/2&&Math.abs(y-ay)<h/2){drag={k,dx:x-ax,dy:y-ay};try{cv.setPointerCapture(e.pointerId);}catch(er){}return;}}});
+cv.addEventListener('pointerdown',e=>{const [x,y]=toW(e);const ks=Object.keys(D.acc).reverse();for(const k of ks){if(blocked(k))continue;const [ax,ay]=D.acc[k],[w,h]=accSize(k);if(Math.abs(x-ax)<w/2&&Math.abs(y-ay)<h/2){drag={k,dx:x-ax,dy:y-ay};try{cv.setPointerCapture(e.pointerId);}catch(er){}return;}}});
 cv.addEventListener('pointermove',e=>{if(!drag)return;const [x,y]=toW(e);D.acc[drag.k]=[Math.round(x-drag.dx),Math.round(y-drag.dy)];});
 cv.addEventListener('pointerup',()=>{if(drag){drag=null;save();}});
 
@@ -1618,7 +1628,7 @@ function render(){
   root.querySelectorAll('.d2tab').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   let h='';
   if(tab==='looks')h=LOOKS.map(([k,n,c])=>card(k,n,c,D.look===k,c===0||D.own[k],D.look===k?'Posat':'Provar')).join('');
-  if(tab==='acc')h=Object.entries(ACC).map(([k,a])=>card(k,a[0],a[1],!!D.acc[k],a[1]===0||D.own[k])).join('');
+  if(tab==='acc')h=Object.entries(ACC).map(([k,a])=>{let c=card(k,a[0],a[1],!!D.acc[k],a[1]===0||D.own[k]);if(blocked(k))c=c.replace('class="d2it','class="d2it no').replace(/<span class="d2ok">[^<]*<\/span>/,'<span class="d2ok">🚫 No amb aquest look</span>');return c;}).join('');
   if(tab==='pets')h=PETS.map(([k,n,c])=>card(k,n,c,D.pet===k,D.own[k])).join('');
   if(tab==='bg')h=Object.entries(BGS).map(([k,b])=>`<div class="d2it${D.bg===k?' on':''}" data-bg="${k}"><div class="d2pic" style="background:${BGIMG[k]?`url(img/dress/${BGIMG[k]}.webp) center/cover`:`linear-gradient(${b[1]},${b[2]})`}"></div><b>${b[0]}</b><span class="d2ok">${D.bg===k?'Actiu':'Posar'}</span></div>`).join('');
   $q('#d2grid').innerHTML=h;
@@ -1633,6 +1643,7 @@ root.addEventListener('click',e=>{
     const cost=tab==='looks'?LOOKS.find(l=>l[0]===k)[2]:tab==='acc'?ACC[k][1]:PETS.find(p=>p[0]===k)[2];
     if(cost>0&&!D.own[k]){if(D.stars<cost){modal(`<h2>Necessites més ⭐</h2><p>Et calen <b>${cost}</b> estrelles. Fes desfilades i reptes per guanyar-ne!</p><button class="d2btn" data-x="1">D’acord</button>`);return;}D.stars-=cost;D.own[k]=1;sfx(()=>fanfare());}
     if(tab==='looks'){D.look=k;refit();pop=1;burst(300,380);}
+    if(tab==='acc'&&blocked(k)&&!D.acc[k]){modal(`<h2>Ja en porta! 🙂</h2><p>Aquest look ja porta ${SLOT[k][0]==='cap'?'barret':'ulleres'}. Canvia de look per posar-te ${ACC[k][0].toLowerCase()}.</p><button class="d2btn" data-x="1">D’acord</button>`);save();render();return;}
     if(tab==='acc'){if(D.acc[k])delete D.acc[k];else{D.acc[k]=slotPos(k);burst(D.acc[k][0],D.acc[k][1],12);}}
     if(tab==='pets'){D.pet=D.pet===k?'':k;}
     sfx(()=>ding());save();render();return;}
@@ -1644,7 +1655,7 @@ root.addEventListener('click',e=>{
     const f=$q('#d2flash');f.style.opacity=1;setTimeout(()=>f.style.opacity=0,150);sfx(()=>ding());}catch(er){modal('<h2>Ups!</h2><p>No s’ha pogut fer la foto.</p><button class="d2btn" data-x="1">D’acord</button>');}}
   if(act==='album')modal(`<h2>📖 El meu àlbum</h2>${D.album.length?`<div class="d2alb">${D.album.slice().reverse().map(u=>`<img src="${u}" alt="">`).join('')}</div>`:'<p>Encara no hi ha fotos. Toca 📸 per fer-ne!</p>'}<button class="d2btn" data-x="1">Tancar</button>`);
 });
-function open(){if(!LOOKS.some(l=>l[0]===D.look)){D.look='base';D.fit2=0;}if(!D.fit2){D.fit2=1;const i=img(D.look);i.complete?refit():i.addEventListener("load",refit,{once:true});}render();}
+function open(){if(!LOOKS.some(l=>l[0]===D.look)){D.look='base';D.fit2=0;}if((D.fit2||0)<2){D.fit2=2;const i=img(D.look);i.complete?refit():i.addEventListener("load",refit,{once:true});}render();}
 function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(current==='dress2'){upd(dt);draw();}requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
 return {open,_D:D,_render:render};
@@ -1677,7 +1688,7 @@ let sy=330,ty=330,hurt=0,lives=3,score=0,got=0,starsRun=0,timeLeft=75,spd=170,co
 let houses=[],gifts=[],items=[],fx=[],floats=[],snow=[],farX=0,nextHouse=0;
 for(let i=0;i<60;i++)snow.push({x:rand(0,W),y:rand(0,H),r:rand(1.5,4),v:rand(20,60),p:rand(0,6)});
 const STARS=Array.from({length:50},()=>({x:rand(0,W),y:rand(0,500),r:rand(.8,2.2),p:rand(0,6)}));
-function reset(){sy=ty=330;hurt=0;lives=3;score=0;got=0;starsRun=0;timeLeft=75;spd=170;cool=0;combo=0;houses=[];gifts=[];items=[];fx=[];floats=[];nextHouse=0;
+function reset(){sy=ty=330;hurt=0;shake=0;lives=3;score=0;got=0;starsRun=0;timeLeft=75;spd=170;cool=0;combo=0;houses=[];gifts=[];items=[];fx=[];floats=[];nextHouse=0;
   let x=260;while(x<W+400){addHouse(x);x=houses[houses.length-1].x+houses[houses.length-1].w/2+rand(70,150);} }
 function addHouse(cx){const k=pick(['h0','h1','h2','h3','h4','h5','h6','h7']),h=rand(200,250),w=wOf(k,h);houses.push({k,x:cx+w/2,w,h,done:false});}
 function floaty(txt,x,y,col='#fff',size=26){floats.push({txt,x,y,col,size,t:0});}
@@ -1704,7 +1715,7 @@ function update(dt){
   t+=dt;
   for(const s of snow){s.y+=s.v*dt;s.x+=Math.sin(t+s.p)*10*dt-(mode==='play'?spd*.15*dt:0);if(s.y>H)s.y=-5;if(s.x<0)s.x+=W;}
   if(mode!=='play')return;
-  timeLeft-=dt;spd=Math.min(330,spd+5*dt);cool-=dt;hurt=Math.max(0,hurt-dt);shake=Math.max(0,shake-dt);
+  timeLeft-=dt;spd=Math.min(330,spd+5*dt);cool-=dt;hurt=Math.max(0,hurt-dt);
   if(keys.ArrowUp||keys.w)ty-=360*dt;if(keys.ArrowDown||keys.s)ty+=360*dt;
   ty=Math.max(130,Math.min(520,ty));sy+=(ty-sy)*Math.min(1,dt*7);
   farX=(farX+spd*.3*dt)%600;
@@ -1730,7 +1741,7 @@ function update(dt){
   items=items.filter(i=>!i.dead&&i.x>-80);
   if(lives<=0||timeLeft<=0)endRun();
 }
-function common(dt){for(const f of fx){f.t+=dt;f.vy+=600*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;}fx=fx.filter(f=>f.t<f.life);for(const f of floats)f.t+=dt;floats=floats.filter(f=>f.t<1.3);}
+function common(dt){shake=Math.max(0,shake-dt);for(const f of fx){f.t+=dt;f.vy+=600*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;}fx=fx.filter(f=>f.t<f.life);for(const f of floats)f.t+=dt;floats=floats.filter(f=>f.t<1.3);}
 
 /* ---- dibuix ---- */
 function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
@@ -1763,7 +1774,7 @@ function drawFx(){for(const f of fx){ctx.globalAlpha=1-f.t/f.life;ctx.fillStyle=
 function drawSnow(){ctx.fillStyle='rgba(255,255,255,.85)';for(const s of snow){ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill();}}
 function draw(){
   ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#1d1b4a';ctx.fillRect(0,0,innerWidth,innerHeight);
-  const sh=shake>0?rand(-6,6):0;ctx.setTransform(dpr*scale,0,0,dpr*scale,dpr*(offX+sh),dpr*offY);
+  const sh=(mode==='play'&&shake>0)?rand(-6,6):0;ctx.setTransform(dpr*scale,0,0,dpr*scale,dpr*(offX+sh),dpr*offY);
   ctx.save();ctx.beginPath();ctx.rect(0,0,W,H);ctx.clip();
   if(mode==='deco'){drawDeco();ctx.restore();return;}
   sky();far();ground();drawHouses();
@@ -1812,8 +1823,8 @@ function decoUp(){if(!drag)return;if(inTree(drag.x,drag.y)||(drag.k==='or_topper
 const ov=document.getElementById('nov');
 function show(html){ov.innerHTML=html;ov.style.display='flex';}
 function hide(){ov.style.display='none';}
-function startScreen(){mode='start';show(`<div class="nbox"><img src="img/noel/santa.webp" alt="" style="height:130px"><h2>El Pare Noel</h2><p>Vola pel poble i <b>deixa caure els regals</b> a les xemeneies 🎁</p><p>👆 <b>Arrossega</b> per pujar i baixar · <b>Toca</b> o el botó 🎁 per deixar un regal</p><p>⚠️ Compte amb els <b>núvols de tempesta</b> i els <b>mussols</b>. Agafa ⭐ per decorar l’arbre!</p><div class="nbtns"><button class="nbig" data-a="play">A volar! 🛷</button><button class="nsec" data-a="deco">🎄 Decorar l’arbre</button></div></div>`);}
-function endRun(){mode='end';D.stars+=starsRun;const rec=score>D.best;if(rec)D.best=score;save();try{fanfare();}catch(e){}
+function startScreen(){mode='start';shake=0;document.getElementById('nback').style.display='none';show(`<div class="nbox"><img src="img/noel/santa.webp" alt="" style="height:130px"><h2>El Pare Noel</h2><p>Vola pel poble i <b>deixa caure els regals</b> a les xemeneies 🎁</p><p>👆 <b>Arrossega</b> per pujar i baixar · <b>Toca</b> o el botó 🎁 per deixar un regal</p><p>⚠️ Compte amb els <b>núvols de tempesta</b> i els <b>mussols</b>. Agafa ⭐ per decorar l’arbre!</p><div class="nbtns"><button class="nbig" data-a="play">A volar! 🛷</button><button class="nsec" data-a="deco">🎄 Decorar l’arbre</button></div></div>`);}
+function endRun(){mode='end';shake=0;pd=null;D.stars+=starsRun;const rec=score>D.best;if(rec)D.best=score;save();try{fanfare();}catch(e){}
   show(`<div class="nbox"><img src="img/noel/${got>0?'santa':'sl_dizzy'}.webp" alt="" style="height:120px"><h2>${lives>0?'Nit acabada!':'Ai, ai, ai!'}</h2><p class="nbigtxt">🎁 ${got} regals repartits</p><p>Punts: <b>${score}</b>${rec?' · 🏆 <b>Rècord!</b>':' · Rècord: '+D.best}</p><p>⭐ +${starsRun} estrelles (en tens ${D.stars})</p><div class="nbtns"><button class="nbig" data-a="play">Tornar a volar 🛷</button><button class="nsec" data-a="deco">🎄 Decorar l’arbre</button></div></div>`);}
 ov.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
   if(a==='play'){hide();reset();mode='play';}
