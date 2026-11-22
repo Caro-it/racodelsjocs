@@ -148,7 +148,7 @@ const cara = (cx, cy, s=1) => `
   <path d="M${cx-9*s} ${cy+16*s} q${9*s} ${9*s} ${18*s} 0" fill="none" stroke="#3b2b4f" stroke-width="${4*s}" stroke-linecap="round"/>`;
 
 const PERSONATGES = {
-  nuvol: { nom:'Núvol', svg: `<svg viewBox="0 0 300 220"><defs><radialGradient id="gn" cx=".4" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#e8eeff"/><stop offset="1" stop-color="#bccbff"/></radialGradient></defs>
+  nuvol: { nom:'Núvol', img:'img/respira/nuvol.webp', svg: `<svg viewBox="0 0 300 220"><defs><radialGradient id="gn" cx=".4" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#e8eeff"/><stop offset="1" stop-color="#bccbff"/></radialGradient></defs>
     <g fill="url(#gn)"><circle cx="95" cy="120" r="62"/><circle cx="160" cy="88" r="76"/><circle cx="222" cy="125" r="56"/><rect x="60" y="120" width="200" height="66" rx="33"/></g>
     ${cara(155,128)}</svg>` },
   globus: { nom:'Globus', svg: `<svg viewBox="0 0 300 300"><defs><radialGradient id="gg" cx=".35" cy=".3"><stop offset="0" stop-color="#ffd1e3"/><stop offset="1" stop-color="#ff8fb8"/></radialGradient></defs>
@@ -185,7 +185,9 @@ let pj = 'nuvol', ritme = 'suau', mut = false, pausat = false, actiu = false, ti
 try { pj = localStorage.getItem('respira_pj') || pj; ritme = localStorage.getItem('respira_ritme') || ritme; } catch(e){}
 
 let nId = 0;
-function dibuixa(k){ const p = PERSONATGES[k]; if (p.img) return `<img src="${p.img}" alt="" draggable="false">`;
+function dibuixa(k){ const p = PERSONATGES[k]; if (p.img) return p.imgDorm
+    ? `<img class="ulls-oberts" src="${p.img}" alt="" draggable="false"><img class="ulls-tancats" src="${p.imgDorm}" alt="" draggable="false">`
+    : `<img src="${p.img}" alt="" draggable="false">`;
   nId++; return p.svg.replace(/id="(\w+)"/g, `id="$1_${nId}"`).replace(/url\(#(\w+)\)/g, `url(#$1_${nId})`); }
 
 function pintaTria(){
