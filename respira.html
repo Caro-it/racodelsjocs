@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Respira amb mi · El Racó dels Jocs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--text:#4a3a6b;--rosa:#ff8fb8;--rosa-f:#e0679a;--lila:#b99cff;--lila-f:#8f6fe0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Fredoka',system-ui,sans-serif;color:var(--text);user-select:none;-webkit-user-select:none;
+  background:linear-gradient(170deg,var(--c1,#e9e1ff),var(--c2,#cfe8ff));transition:--c1 3s;}
+.cel{position:fixed;inset:0;z-index:-1;transition:opacity 3s;background:linear-gradient(170deg,#e9e1ff,#cfe8ff)}
+.cel.b{background:linear-gradient(170deg,#ffe3ef,#e6dcff)}
+.cel.c{background:linear-gradient(170deg,#c9d8ff,#b9a8ef)}
+.estel{position:fixed;font-size:14px;opacity:.6;animation:flota 6s ease-in-out infinite;pointer-events:none;z-index:0}
+.hidden{display:none!important}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;padding:20px;text-align:center;z-index:2}
+h1{font-size:clamp(32px,7vw,56px);color:#7a5bd6;line-height:1.05;text-shadow:3px 3px 0 #fff}
+h2{font-size:clamp(20px,4vw,28px)}
+p.sub{font-size:clamp(17px,3.4vw,22px);max-width:520px}
+.tria{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.opt{background:#ffffffcc;border:4px solid transparent;border-radius:26px;padding:10px 14px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit;font-size:18px;font-weight:600;color:var(--text);
+  box-shadow:0 5px 0 #d9cdf5;transition:transform .15s;min-width:112px}
+.opt svg,.opt img{width:84px;height:84px;object-fit:contain}
+.opt.on{border-color:var(--lila);transform:translateY(-4px);background:#fff}
+.opt small{font-weight:400;font-size:14px;opacity:.8}
+.btn{font-family:inherit;font-size:clamp(20px,4vw,26px);font-weight:700;color:#fff;background:var(--lila);border:none;
+  border-radius:999px;padding:14px 40px;box-shadow:0 6px 0 var(--lila-f);cursor:pointer;text-decoration:none;display:inline-block}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--lila-f)}
+.btn.rosa{background:var(--rosa);box-shadow:0 6px 0 var(--rosa-f)}
+.casa{position:fixed;top:12px;left:12px;z-index:5;width:48px;height:48px;border-radius:50%;background:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:24px;text-decoration:none;box-shadow:0 4px 0 #d9cdf5;border:none;cursor:pointer}
+.so{left:auto;right:12px}
+
+/* --- pantalla de respirar --- */
+#joc{justify-content:space-between;padding:70px 20px 30px}
+.escena{position:relative;width:min(78vw,52vh,420px);aspect-ratio:1;display:flex;align-items:center;justify-content:center}
+.anell{position:absolute;inset:0;transform:rotate(-90deg)}
+.anell circle{fill:none;stroke-width:10;stroke-linecap:round}
+.anell .fons{stroke:#ffffffaa}
+.anell .prog{stroke:#a98aff;stroke-dasharray:1000;stroke-dashoffset:1000}
+#pj{width:62%;height:62%;display:flex;align-items:center;justify-content:center;transform:scale(.8);
+  transition-property:transform;transition-timing-function:ease-in-out;filter:drop-shadow(0 6px 0 #ffffffaa) drop-shadow(0 14px 14px #6a4fb055)}
+#pj svg,#pj img{width:100%;height:100%;object-fit:contain}
+.ulls-tancats{display:none}
+.dorm .ulls-oberts{display:none}.dorm .ulls-tancats{display:inline}
+.fase{font-size:clamp(28px,6.5vw,46px);font-weight:700;color:#5b3fb8;text-shadow:2px 2px 0 #fff;min-height:1.2em}
+.compte{font-size:clamp(44px,10vw,76px);font-weight:700;color:#8f6fe0;text-shadow:2px 3px 0 #fff;min-height:1.1em;line-height:1}
+.pista{font-size:clamp(16px,3.2vw,20px);opacity:.85;min-height:1.3em}
+.punts{display:flex;gap:10px}
+.punts i{width:16px;height:16px;border-radius:50%;background:#ffffff88;transition:background .4s,transform .4s}
+.punts i.fet{background:#fff;transform:scale(1.2)}
+.punts i.ara{background:#ffd76a}
+.baix{display:flex;gap:12px;align-items:center}
+.estat{font-size:clamp(17px,3.4vw,21px)}
+
+/* --- final --- */
+.cares{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.cara{background:#fff;border:none;border-radius:22px;padding:12px 16px;font-family:inherit;font-size:16px;font-weight:600;
+  color:var(--text);cursor:pointer;box-shadow:0 5px 0 #d9cdf5;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:110px}
+.cara span{font-size:44px}
+.insignia{background:#fff;border-radius:24px;padding:12px 22px;box-shadow:0 5px 0 #d9cdf5;font-size:clamp(17px,3.4vw,21px)}
+.insignia b{color:#7a5bd6}
+.missatge{font-size:clamp(18px,3.6vw,23px);max-width:520px;min-height:1.4em}
+
+@keyframes flota{50%{transform:translateY(-14px)}}
+@keyframes bob{50%{transform:translateY(-10px)}}
+.bob{animation:bob 3s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.estel,.bob{animation:none}}
+</style>
+</head>
+<body>
+<div class="cel" id="cel"></div>
+<div class="cel b" id="celB" style="opacity:0"></div>
+<div class="cel c" id="celC" style="opacity:0"></div>
+
+<a class="casa" id="btnCasa" title="Tornar al Racó">🏠</a>
+<button class="casa so" id="btnSo" title="So">🔊</button>
+
+<!-- INICI -->
+<section class="screen" id="inici">
+  <h1>Respira amb mi</h1>
+  <p class="sub">Quan tens nervis, ràbia o no pots dormir, respirar a poc a poc t'ajuda a calmar-te. 💜</p>
+  <h2>Amb qui vols respirar?</h2>
+  <div class="tria" id="triaPj"></div>
+  <h2>Quin ritme?</h2>
+  <div class="tria" id="triaRitme"></div>
+  <button class="btn" id="btnComenca">Comencem ▶</button>
+</section>
+
+<!-- JOC -->
+<section class="screen hidden" id="joc">
+  <div class="punts" id="punts"></div>
+  <div class="escena">
+    <svg class="anell" viewBox="0 0 340 340"><circle class="fons" cx="170" cy="170" r="160"/><circle class="prog" id="prog" cx="170" cy="170" r="160"/></svg>
+    <div id="pj"></div>
+  </div>
+  <div>
+    <div class="fase" id="fase">Prepara't…</div>
+    <div class="compte" id="compte"></div>
+    <div class="pista" id="pista"></div>
+  </div>
+  <div class="baix">
+    <button class="btn rosa" id="btnPausa">⏸ Pausa</button>
+    <button class="btn" id="btnPara">⏹ Para</button>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="screen hidden" id="final">
+  <div id="pjFinal" class="bob" style="width:150px;height:150px"></div>
+  <h1>Molt bé!</h1>
+  <div class="insignia">🏅 Has guanyat la insígnia <b>Calma</b> · <span id="vegades"></span></div>
+  <h2>Com et sents ara?</h2>
+  <div class="cares">
+    <button class="cara" data-m="tranquil"><span>😌</span>Em sento bé</button>
+    <button class="cara" data-m="millor"><span>🙂</span>Una mica millor</button>
+    <button class="cara" data-m="igual"><span>😣</span>Encara em costa</button>
+  </div>
+  <p class="missatge" id="missatge"></p>
+  <div class="tria">
+    <button class="btn" id="btnAltra">Una altra vegada 🔄</button>
+  </div>
+</section>
+
+<script>
+{
+/* ===================== CONFIGURACIÓ ===================== */
+const CONFIG = { tornarURL: 'index.html' };
+
+// Cara kawaii comuna (ulls oberts / tancats segons la fase)
+const cara = (cx, cy, s=1) => `
+  <g class="ulls-oberts">
+    <circle cx="${cx-26*s}" cy="${cy}" r="${9*s}" fill="#3b2b4f"/><circle cx="${cx+26*s}" cy="${cy}" r="${9*s}" fill="#3b2b4f"/>
+    <circle cx="${cx-23*s}" cy="${cy-4*s}" r="${3.2*s}" fill="#fff"/><circle cx="${cx+29*s}" cy="${cy-4*s}" r="${3.2*s}" fill="#fff"/>
+  </g>
+  <g class="ulls-tancats" fill="none" stroke="#3b2b4f" stroke-width="${4*s}" stroke-linecap="round">
+    <path d="M${cx-35*s} ${cy} q${9*s} ${8*s} ${18*s} 0"/><path d="M${cx+17*s} ${cy} q${9*s} ${8*s} ${18*s} 0"/>
+  </g>
+  <ellipse cx="${cx-44*s}" cy="${cy+16*s}" rx="${11*s}" ry="${7*s}" fill="#ff9ec0" opacity=".8"/>
+  <ellipse cx="${cx+44*s}" cy="${cy+16*s}" rx="${11*s}" ry="${7*s}" fill="#ff9ec0" opacity=".8"/>
+  <path d="M${cx-9*s} ${cy+16*s} q${9*s} ${9*s} ${18*s} 0" fill="none" stroke="#3b2b4f" stroke-width="${4*s}" stroke-linecap="round"/>`;
+
+const PERSONATGES = {
+  nuvol: { nom:'Núvol', svg: `<svg viewBox="0 0 300 220"><defs><radialGradient id="gn" cx=".4" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#e8eeff"/><stop offset="1" stop-color="#bccbff"/></radialGradient></defs>
+    <g fill="url(#gn)"><circle cx="95" cy="120" r="62"/><circle cx="160" cy="88" r="76"/><circle cx="222" cy="125" r="56"/><rect x="60" y="120" width="200" height="66" rx="33"/></g>
+    ${cara(155,128)}</svg>` },
+  globus: { nom:'Globus', svg: `<svg viewBox="0 0 300 300"><defs><radialGradient id="gg" cx=".35" cy=".3"><stop offset="0" stop-color="#ffd1e3"/><stop offset="1" stop-color="#ff8fb8"/></radialGradient></defs>
+    <path d="M150 238 q-12 22 6 40 q14 14 -4 22" fill="none" stroke="#b99cff" stroke-width="4"/>
+    <path d="M140 236 h20 l-6 10 h-8z" fill="#ff7aa8"/>
+    <ellipse cx="150" cy="128" rx="98" ry="112" fill="url(#gg)"/>
+    <ellipse cx="108" cy="70" rx="18" ry="30" fill="#fff" opacity=".55" transform="rotate(-25 108 70)"/>
+    ${cara(150,128)}</svg>` },
+  osset: { nom:'Osset', img:'img/endreca/osset.webp' },
+};
+
+// Ritmes: segons de cada fase
+const RITMES = {
+  suau:    { nom:'🐣 Suau',    desc:'3 · 1 · 4', fases:[['in',3],['hold',1],['out',4]], resp:5 },
+  calma:   { nom:'🌸 Calma',   desc:'4 · 2 · 5', fases:[['in',4],['hold',2],['out',5]], resp:5 },
+  quadrat: { nom:'🟪 Quadrat', desc:'4 · 4 · 4 · 4', fases:[['in',4],['hold',4],['out',4],['hold',4]], resp:4 },
+};
+
+const TEXT = {
+  in:   ['Inspira', 'Agafa aire pel nas… omple la panxa com un globus'],
+  hold: ['Aguanta', 'Guarda l\'aire un moment'],
+  out:  ['Treu l\'aire', 'A poc a poc per la boca, com si bufessis una espelma'],
+};
+
+const MISSATGES = {
+  tranquil: 'Que bé! Recorda que pots tornar a respirar així sempre que ho necessitis. 💜',
+  millor:   'Molt bé! Cada vegada que ho practiques et sortirà més fàcil. 🌈',
+  igual:    'No passa res, a vegades costa. Fem-ne una altra ronda junts? També pots explicar-ho a algú de confiança. 🤗',
+};
+
+/* ===================== ESTAT ===================== */
+const $ = id => document.getElementById(id);
+let pj = 'nuvol', ritme = 'suau', mut = false, pausat = false, actiu = false, timers = [];
+try { pj = localStorage.getItem('respira_pj') || pj; ritme = localStorage.getItem('respira_ritme') || ritme; } catch(e){}
+
+let nId = 0;
+function dibuixa(k){ const p = PERSONATGES[k]; if (p.img) return `<img src="${p.img}" alt="" draggable="false">`;
+  nId++; return p.svg.replace(/id="(\w+)"/g, `id="$1_${nId}"`).replace(/url\(#(\w+)\)/g, `url(#$1_${nId})`); }
+
+function pintaTria(){
+  $('triaPj').innerHTML = Object.entries(PERSONATGES).map(([k,p]) =>
+    `<button class="opt${k===pj?' on':''}" data-pj="${k}">${dibuixa(k)}${p.nom}</button>`).join('');
+  $('triaRitme').innerHTML = Object.entries(RITMES).map(([k,r]) =>
+    `<button class="opt${k===ritme?' on':''}" data-r="${k}">${r.nom}<small>${r.desc} segons</small></button>`).join('');
+}
+
+function mostra(id){ ['inici','joc','final'].forEach(s => $(s).classList.toggle('hidden', s!==id)); }
+
+function cel(f){ $('celB').style.opacity = f==='in' ? 1 : 0; $('celC').style.opacity = f==='out' ? 1 : 0; }
+
+/* ===================== SO SUAU ===================== */
+let actx = null;
+function so(f1, f2, d, vol=.05){
+  if (mut) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(f1, t); o.frequency.linearRampToValueAtTime(f2, t+d);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t+.4);
+    g.gain.setValueAtTime(vol, t+Math.max(.5,d-.5)); g.gain.exponentialRampToValueAtTime(0.0001, t+d);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t+d+.05);
+  }catch(e){}
+}
+const campaneta = () => { so(880,880,.9,.04); setTimeout(()=>so(1175,1175,1.2,.03),180); };
+
+/* ===================== RESPIRAR ===================== */
+const espera = ms => new Promise(res => { const t = setTimeout(res, ms); timers.push(t); });
+async function esperaSeg(){ do { await espera(1000); } while (pausat && actiu); }
+
+async function respira(){
+  const R = RITMES[ritme];
+  actiu = true; pausat = false; $('btnPausa').textContent = '⏸ Pausa';
+  mostra('joc');
+  $('pj').innerHTML = dibuixa(pj);
+  $('pj').style.transitionDuration = '1.5s'; $('pj').style.transform = 'scale(.8)';
+  $('punts').innerHTML = Array.from({length:R.resp}, () => '<i></i>').join('');
+  $('fase').textContent = 'Prepara\'t…'; $('pista').textContent = 'Seu bé i posa una mà a la panxa';
+  for (const n of [3,2,1]) { $('compte').textContent = n; await esperaSeg(); if(!actiu) return; }
+
+  const prog = $('prog'), punts = $('punts').children;
+  for (let i=0; i<R.resp; i++){
+    punts[i].classList.add('ara');
+    for (const [f, s] of R.fases){
+      if (!actiu) return;
+      const [titol, pista] = TEXT[f];
+      $('fase').textContent = titol; $('pista').textContent = pista;
+      $('pj').classList.toggle('dorm', f !== 'in');
+      cel(f);
+      // personatge: s'infla, es queda, es desinfla
+      if (f === 'in')  { $('pj').style.transitionDuration = s+'s'; $('pj').style.transform = 'scale(1.18)'; so(220, 330, s); }
+      if (f === 'out') { $('pj').style.transitionDuration = s+'s'; $('pj').style.transform = 'scale(.8)';  so(330, 196, s); }
+      // anell de progrés de la fase
+      prog.style.transition = 'none'; prog.style.strokeDashoffset = 1000; void prog.getBoundingClientRect();
+      prog.style.transition = `stroke-dashoffset ${s}s linear`; prog.style.strokeDashoffset = 0;
+      for (let c=1; c<=s; c++){ $('compte').textContent = c; await esperaSeg(); if(!actiu) return; }
+    }
+    punts[i].classList.remove('ara'); punts[i].classList.add('fet');
+    campaneta();
+  }
+  acaba();
+}
+
+function para(){ actiu = false; timers.forEach(clearTimeout); timers = []; cel(''); }
+
+function acaba(){
+  para();
+  let n = 1;
+  try{
+    n = (+localStorage.getItem('respira_total') || 0) + 1; localStorage.setItem('respira_total', n);
+    const t = JSON.parse(localStorage.getItem('raco_stars')) || 0; localStorage.setItem('raco_stars', JSON.stringify(t + 3));
+  }catch(e){}
+  $('vegades').textContent = n === 1 ? 'la primera vegada!' : `ja ho has fet ${n} vegades`;
+  $('pjFinal').innerHTML = dibuixa(pj);
+  $('missatge').textContent = '';
+  mostra('final');
+  [523,659,784].forEach((f,i)=>setTimeout(()=>so(f,f,1.2,.04), i*220));
+}
+
+/* ===================== ESDEVENIMENTS ===================== */
+$('triaPj').addEventListener('click', e => { const b = e.target.closest('[data-pj]'); if(!b) return;
+  pj = b.dataset.pj; try{localStorage.setItem('respira_pj', pj);}catch(_){} pintaTria(); so(660,660,.25,.04); });
+$('triaRitme').addEventListener('click', e => { const b = e.target.closest('[data-r]'); if(!b) return;
+  ritme = b.dataset.r; try{localStorage.setItem('respira_ritme', ritme);}catch(_){} pintaTria(); so(660,660,.25,.04); });
+$('btnComenca').onclick = respira;
+$('btnAltra').onclick = respira;
+$('btnPara').onclick = () => { para(); mostra('inici'); };
+$('btnPausa').onclick = () => { pausat = !pausat; $('btnPausa').textContent = pausat ? '▶ Continua' : '⏸ Pausa';
+  $('pj').style.transitionDuration = '.6s'; };
+document.querySelector('.cares').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if(!b) return;
+  $('missatge').textContent = MISSATGES[b.dataset.m]; so(784,784,.6,.04); });
+$('btnSo').onclick = () => { mut = !mut; $('btnSo').textContent = mut ? '🔇' : '🔊'; };
+$('btnCasa').href = CONFIG.tornarURL;
+
+// estrelletes de fons
+for (let i=0;i<14;i++){ const s=document.createElement('span'); s.className='estel'; s.textContent=['✦','·','✧'][i%3];
+  s.style.left=Math.random()*100+'vw'; s.style.top=Math.random()*100+'vh'; s.style.animationDelay=(Math.random()*6)+'s';
+  s.style.color='#fff'; document.body.appendChild(s); }
+
+pintaTria();
+}
+</script>
+</body>
+</html>
