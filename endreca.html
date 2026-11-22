@@ -54,6 +54,7 @@ h1{font-size:clamp(34px,7vw,62px);color:var(--rosa);line-height:1.05;
   display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;
   box-shadow:0 3px 0 #f3c3d8;z-index:5;
 }
+.barra .ico.casa{background:#fff url(img/ui/home.webp) center/74% no-repeat;box-shadow:0 3px 0 #f3c3d8}
 .barra .ico{
   font-size:24px;width:46px;height:46px;border-radius:50%;border:none;background:var(--rosa-clar);
   display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;flex:none;
@@ -139,7 +140,7 @@ h1{font-size:clamp(34px,7vw,62px);color:var(--rosa);line-height:1.05;
 <!-- JOC -->
 <main id="game" class="hidden">
   <div class="barra">
-    <a class="ico" id="btnTornar" title="Tornar al Racó">🏠</a>
+    <a class="ico casa" id="btnTornar" title="Tornar al Racó" aria-label="Tornar al Racó"></a>
     <div class="mascota">
       <span class="gat">🐱</span>
       <span class="bombolla" id="bombolla">Endrecem junts!</span>
@@ -162,7 +163,7 @@ h1{font-size:clamp(34px,7vw,62px);color:var(--rosa);line-height:1.05;
   <div class="dades" id="dades"></div>
   <div class="btns">
     <button class="btn" id="btnTornarJugar">Tornar a jugar 🔄</button>
-    <a class="btn sec" id="btnRaco">Al Racó 🏠</a>
+    <a class="btn sec" id="btnRaco">Al Racó <img src="img/ui/home.webp" alt="" style="width:1.2em;height:1.2em;vertical-align:-.25em"></a>
   </div>
 </section>
 
@@ -176,7 +177,7 @@ const CONFIG = {
 
 // Llocs de l'habitació. "on" s'usa per a les pistes.
 const ZONES = [
-  { id:'armari',       nom:'Armari',            icona:'🚪', on:"a l'armari",       color:'#c9a7ff' },
+  { id:'armari',       nom:'Armari',            icona:'🚪', img:'img/endreca/armari.webp', on:"a l'armari",       color:'#c9a7ff' },
   { id:'prestatgeria', nom:'Prestatgeria',      icona:'🗃️', on:'a la prestatgeria', color:'#7cc4f5' },
   { id:'llit',         nom:'Llit',              icona:'🛏️', on:'al llit',           color:'#ff8fb8' },
   { id:'bagul',        nom:'Bagul de joguines', icona:'📦', on:'al bagul',          color:'#6fd3a6' },
@@ -257,7 +258,7 @@ function munta(){
     const total = ITEMS.filter(i => i.zona === z.id).length;
     const d = document.createElement('div');
     d.className = 'zone'; d.dataset.zona = z.id; d.style.setProperty('--c', z.color);
-    d.innerHTML = `<div class="icona">${z.icona}</div><div class="nom">${z.nom}</div>
+    d.innerHTML = `<div class="icona">${z.img ? `<img src="${z.img}" alt="" style="height:2.2em;width:auto;display:block">` : z.icona}</div><div class="nom">${z.nom}</div>
                    <div class="dins"></div><div class="compt">0/${total}</div>`;
     d.dataset.total = total; d.dataset.n = 0;
     wall.appendChild(d);
