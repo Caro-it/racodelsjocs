@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Endreça l'Habitació · El Racó dels Jocs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rosa:#ff8fb8; --rosa-fosc:#e0679a; --rosa-clar:#ffe4ef;
+  --lila:#c9a7ff; --lila-fosc:#9f7be0;
+  --menta:#9be7c4; --groc:#ffe08a; --blau:#a7d8ff;
+  --text:#5b3a5e;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Fredoka',system-ui,-apple-system,sans-serif;color:var(--text);
+  background:var(--rosa-clar);touch-action:none;user-select:none;-webkit-user-select:none;
+}
+.hidden{display:none!important}
+
+/* ---------- PANTALLES INICI / FINAL ---------- */
+.screen{
+  position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:18px;text-align:center;padding:20px;
+  background:
+    radial-gradient(circle,#fff 0 5px,transparent 6px) 0 0/44px 44px,
+    linear-gradient(160deg,#ffe4ef,#efe2ff);
+}
+h1{font-size:clamp(34px,7vw,62px);color:var(--rosa);line-height:1.05;
+   text-shadow:3px 3px 0 #fff,6px 6px 0 var(--lila)}
+.screen p{font-size:clamp(18px,3.5vw,24px);max-width:520px}
+.big-emoji{font-size:clamp(80px,17vw,140px);animation:bob 2s ease-in-out infinite}
+.btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.btn{
+  font-family:inherit;font-size:clamp(20px,4vw,28px);font-weight:700;color:#fff;
+  background:var(--rosa);border:none;border-radius:999px;padding:14px 38px;
+  box-shadow:0 6px 0 var(--rosa-fosc);cursor:pointer;text-decoration:none;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--rosa-fosc)}
+.btn.sec{background:var(--lila);box-shadow:0 6px 0 var(--lila-fosc)}
+.btn.sec:active{box-shadow:0 2px 0 var(--lila-fosc)}
+.estrelles{font-size:clamp(50px,11vw,84px);letter-spacing:6px}
+.estrelles span{display:inline-block;opacity:0;animation:popIn .5s forwards}
+.estrelles span.off{filter:grayscale(1) opacity(.35)}
+.dades{font-size:clamp(18px,3.5vw,24px);background:#fff;border-radius:20px;padding:10px 24px;
+       box-shadow:0 4px 0 #f3c3d8}
+
+/* ---------- JOC ---------- */
+#game{position:fixed;inset:0;display:flex;flex-direction:column}
+.barra{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;
+  box-shadow:0 3px 0 #f3c3d8;z-index:5;
+}
+.barra .ico{
+  font-size:24px;width:46px;height:46px;border-radius:50%;border:none;background:var(--rosa-clar);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;flex:none;
+}
+.mascota{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+.mascota .gat{font-size:34px;flex:none}
+.bombolla{
+  background:var(--groc);border-radius:16px;padding:6px 12px;font-weight:600;
+  font-size:clamp(14px,2.8vw,19px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.bombolla.anim{animation:popIn .35s}
+.stat{font-weight:700;font-size:clamp(15px,3vw,20px);background:var(--rosa-clar);
+      border-radius:999px;padding:6px 12px;flex:none}
+
+.room{flex:1;display:flex;flex-direction:column;min-height:0}
+.wall{
+  flex:55;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px;
+  background:
+    radial-gradient(circle,#fff6 0 4px,transparent 5px) 0 0/36px 36px,
+    linear-gradient(#ffd3e6,#ffc2dc);
+  border-bottom:10px solid #e9a7c4;
+}
+.zone{
+  background:#fffc;border:4px dashed var(--c);border-radius:24px;padding:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  transition:transform .15s,background .15s;min-height:0;overflow:hidden;
+}
+.zone.over{transform:scale(1.06);background:#fff;border-style:solid}
+.zone.shake{animation:shake .35s}
+.zone.full{border-style:solid;background:#fff}
+.zone .icona{font-size:clamp(34px,7.5vmin,64px);line-height:1}
+.zone .nom{font-weight:700;font-size:clamp(13px,2.6vw,19px)}
+.zone .dins{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;min-height:26px;
+            font-size:clamp(18px,3.6vmin,28px)}
+.zone .dins span{animation:popIn .35s}
+.zone .dins img{width:1.3em;height:1.3em;object-fit:contain;vertical-align:middle}
+.zone .compt{font-size:13px;font-weight:600;background:var(--c);color:#fff;border-radius:999px;padding:1px 10px}
+
+.floor{
+  flex:45;position:relative;
+  background:repeating-linear-gradient(90deg,#f6d7b0 0 70px,#efc999 70px 74px);
+}
+.item{
+  position:absolute;font-size:clamp(40px,9vmin,66px);line-height:1;cursor:grab;
+  transform:rotate(var(--r,0deg));filter:drop-shadow(0 5px 2px #0003);touch-action:none;
+  transition:transform .15s;
+}
+.item.wobble{animation:wobble .5s}
+.item.dragging{position:fixed;z-index:50;cursor:grabbing;transform:scale(1.25) rotate(0);
+               filter:drop-shadow(0 12px 6px #0004);transition:none}
+.item.tornant{transition:left .3s ease,top .3s ease,transform .3s}
+
+/* ---------- EFECTES ---------- */
+.spark{position:fixed;z-index:60;pointer-events:none;font-size:24px;animation:spark .7s ease-out forwards}
+.confeti{position:fixed;top:-20px;width:12px;height:16px;border-radius:3px;z-index:30;pointer-events:none;
+         animation:fall linear forwards}
+
+@keyframes bob{50%{transform:translateY(-12px)}}
+@keyframes popIn{0%{transform:scale(0);opacity:0}70%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes wobble{25%{transform:rotate(-15deg)}50%{transform:rotate(12deg)}75%{transform:rotate(-6deg)}}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.3);opacity:0}}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+@media (max-width:640px){
+  .wall{grid-template-columns:repeat(2,1fr);gap:8px;padding:8px}
+  .barra .ico{width:40px;height:40px;font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- PANTALLA D'INICI -->
+<section id="start" class="screen">
+  <img class="big-emoji" src="img/endreca/osset.webp" alt="" style="width:clamp(130px,28vw,220px);height:auto">
+  <h1>Endreça<br>l'Habitació</h1>
+  <p>Quin desordre! 🙀 Arrossega cada cosa al seu lloc.</p>
+  <div class="btns">
+    <button class="btn" id="btnJugar">Jugar ▶</button>
+  </div>
+</section>
+
+<!-- JOC -->
+<main id="game" class="hidden">
+  <div class="barra">
+    <a class="ico" id="btnTornar" title="Tornar al Racó">🏠</a>
+    <div class="mascota">
+      <span class="gat">🐱</span>
+      <span class="bombolla" id="bombolla">Endrecem junts!</span>
+    </div>
+    <span class="stat" id="progres">0/12</span>
+    <span class="stat" id="temps">⏱ 0:00</span>
+    <button class="ico" id="btnSo" title="So">🔊</button>
+  </div>
+  <div class="room">
+    <div class="wall" id="wall"></div>
+    <div class="floor" id="floor"></div>
+  </div>
+</main>
+
+<!-- PANTALLA FINAL -->
+<section id="end" class="screen hidden">
+  <div class="big-emoji">🏡</div>
+  <h1>Habitació<br>endreçada!</h1>
+  <div class="estrelles" id="estrelles"></div>
+  <div class="dades" id="dades"></div>
+  <div class="btns">
+    <button class="btn" id="btnTornarJugar">Tornar a jugar 🔄</button>
+    <a class="btn sec" id="btnRaco">Al Racó 🏠</a>
+  </div>
+</section>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓ — canvia aquí el que vulguis
+   ========================================================= */
+const CONFIG = {
+  tornarURL: 'index.html',   // on va el botó 🏠
+};
+
+// Llocs de l'habitació. "on" s'usa per a les pistes.
+const ZONES = [
+  { id:'armari',       nom:'Armari',            icona:'🚪', on:"a l'armari",       color:'#c9a7ff' },
+  { id:'prestatgeria', nom:'Prestatgeria',      icona:'🗃️', on:'a la prestatgeria', color:'#7cc4f5' },
+  { id:'llit',         nom:'Llit',              icona:'🛏️', on:'al llit',           color:'#ff8fb8' },
+  { id:'bagul',        nom:'Bagul de joguines', icona:'📦', on:'al bagul',          color:'#6fd3a6' },
+];
+
+// Coses desordenades. "img" opcional: posa la ruta d'una imatge (p. ex. de Stitch) i substitueix l'emoji.
+const ITEMS = [
+  { e:'👕', nom:'La samarreta',      zona:'armari', img:'img/endreca/samarreta.webp' },
+  { e:'👗', nom:'El vestit',         zona:'armari', img:'img/endreca/vestit.webp' },
+  { e:'🧦', nom:'Els mitjons',       zona:'armari', pl:true, img:'img/endreca/mitjons.webp' },
+  { e:'👖', nom:'Els pantalons',     zona:'armari', pl:true, img:'img/endreca/pantalons.webp' },
+  { e:'📚', nom:'Els llibres',       zona:'prestatgeria', pl:true, img:'img/endreca/llibres.webp' },
+  { e:'📖', nom:'El conte',          zona:'prestatgeria', img:'img/endreca/conte.webp' },
+  { e:'🧸', nom:"L'osset",           zona:'llit', img:'img/endreca/osset.webp' },
+  { e:'🦄', nom:"L'unicorn",         zona:'llit', img:'img/endreca/unicorn.webp' },
+  { e:'🐰', nom:'El conillet',       zona:'llit', img:'img/endreca/conillet.webp' },
+  { e:'🚗', nom:'El cotxet',         zona:'bagul', img:'img/endreca/cotxet.webp' },
+  { e:'🧩', nom:'El trencaclosques', zona:'bagul', img:'img/endreca/trencaclosques.webp' },
+  { e:'⚽', nom:'La pilota',         zona:'bagul', img:'img/endreca/pilota.webp' },
+];
+
+const ELOGIS = ['Molt bé! 🎉','Genial! ✨','Ets una crack! 💖','Perfecte! 🌟','Bravo! 🐾','Així m\'agrada! 😻'];
+
+/* =========================================================
+   SO (sense arxius, generat amb el navegador)
+   ========================================================= */
+let actx = null, mut = false;
+function tone(f, d, type='sine', vol=.18, when=0){
+  if (mut) return;
+  try{
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime + when;
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(.001, t + d);
+    o.connect(g).connect(actx.destination);
+    o.start(t); o.stop(t + d);
+  }catch(e){}
+}
+const so = {
+  agafar: () => tone(660,.08,'triangle',.1),
+  encert: () => { tone(880,.12); tone(1320,.18,'sine',.14,.07); },
+  error:  () => { tone(320,.15,'triangle',.14); tone(250,.22,'triangle',.12,.12); },
+  victoria: () => [523,659,784,1047,1319].forEach((f,i)=>tone(f,.3,'sine',.16,i*.12)),
+};
+
+/* =========================================================
+   ESTAT
+   ========================================================= */
+const $ = id => document.getElementById(id);
+let colocats = 0, errors = 0, t0 = 0, timer = null, drag = null;
+
+function mostra(id){
+  ['start','game','end'].forEach(s => $(s).classList.toggle('hidden', s !== id));
+}
+
+function diu(text){
+  const b = $('bombolla');
+  b.textContent = text;
+  b.classList.remove('anim'); void b.offsetWidth; b.classList.add('anim');
+}
+
+function formatTemps(ms){
+  const s = Math.floor(ms/1000);
+  return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+}
+
+/* =========================================================
+   MUNTAR EL NIVELL
+   ========================================================= */
+function munta(){
+  colocats = 0; errors = 0;
+  const wall = $('wall'), floor = $('floor');
+  wall.innerHTML = ''; floor.innerHTML = '';
+
+  ZONES.forEach(z => {
+    const total = ITEMS.filter(i => i.zona === z.id).length;
+    const d = document.createElement('div');
+    d.className = 'zone'; d.dataset.zona = z.id; d.style.setProperty('--c', z.color);
+    d.innerHTML = `<div class="icona">${z.icona}</div><div class="nom">${z.nom}</div>
+                   <div class="dins"></div><div class="compt">0/${total}</div>`;
+    d.dataset.total = total; d.dataset.n = 0;
+    wall.appendChild(d);
+  });
+
+  // Repartim les coses pel terra en una graella amb una mica d'atzar
+  const estret = window.innerWidth < 640;
+  const cols = estret ? 4 : 6, rows = Math.ceil(ITEMS.length / cols);
+  const celles = [];
+  for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) celles.push([c,r]);
+  celles.sort(() => Math.random() - .5);
+
+  ITEMS.forEach((it, i) => {
+    const [c, r] = celles[i];
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = it.img ? `<img src="${it.img}" alt="" style="width:1.5em;height:1.5em;object-fit:contain;pointer-events:none;display:block" draggable="false">` : it.e;
+    el.dataset.i = i;
+    const x = (c + .15 + Math.random()*.4) / cols * 100;
+    const y = (r + .1 + Math.random()*.35) / rows * 100;
+    el.style.left = Math.min(x, 85) + '%';
+    el.style.top  = Math.min(y, 75) + '%';
+    el.style.setProperty('--r', (Math.random()*50 - 25) + 'deg');
+    el.addEventListener('pointerdown', comença);
+    floor.appendChild(el);
+  });
+
+  actualitzaProgres();
+  diu('Endrecem junts! 🧹');
+}
+
+function actualitzaProgres(){ $('progres').textContent = `${colocats}/${ITEMS.length}`; }
+
+/* =========================================================
+   ARROSSEGAR I DEIXAR ANAR (ratolí i dit)
+   ========================================================= */
+function zonaA(x, y){
+  return [...document.querySelectorAll('.zone')].find(z => {
+    const r = z.getBoundingClientRect();
+    return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+  });
+}
+
+function comença(ev){
+  if (drag) return;
+  ev.preventDefault();
+  const el = ev.currentTarget;
+  const r = el.getBoundingClientRect();
+  drag = { el, ox: ev.clientX - r.left, oy: ev.clientY - r.top, inici: r,
+           left: el.style.left, top: el.style.top };
+  el.classList.remove('wobble','tornant');
+  el.classList.add('dragging');
+  document.body.appendChild(el);
+  el.style.left = r.left + 'px'; el.style.top = r.top + 'px';
+  so.agafar();
+  window.addEventListener('pointermove', mou);
+  window.addEventListener('pointerup', deixa);
+  window.addEventListener('pointercancel', deixa);
+}
+
+function mou(ev){
+  if (!drag) return;
+  drag.el.style.left = (ev.clientX - drag.ox) + 'px';
+  drag.el.style.top  = (ev.clientY - drag.oy) + 'px';
+  const z = zonaA(ev.clientX, ev.clientY);
+  document.querySelectorAll('.zone').forEach(n => n.classList.toggle('over', n === z));
+}
+
+function deixa(ev){
+  if (!drag) return;
+  window.removeEventListener('pointermove', mou);
+  window.removeEventListener('pointerup', deixa);
+  window.removeEventListener('pointercancel', deixa);
+  document.querySelectorAll('.zone').forEach(n => n.classList.remove('over'));
+
+  const { el } = drag;
+  const it = ITEMS[el.dataset.i];
+  const z = zonaA(ev.clientX, ev.clientY);
+  const d = drag; drag = null;
+
+  if (z && z.dataset.zona === it.zona) return encert(el, it, z, ev.clientX, ev.clientY);
+  if (z) return equivocat(el, it, z, d);
+
+  // Deixat al terra: es queda on l'has deixat
+  const f = $('floor').getBoundingClientRect();
+  if (ev.clientY > f.top) {
+    const x = (ev.clientX - d.ox - f.left) / f.width * 100;
+    const y = (ev.clientY - d.oy - f.top) / f.height * 100;
+    tornaAlTerra(el, Math.max(0, Math.min(x, 88)) + '%', Math.max(0, Math.min(y, 78)) + '%');
+  } else {
+    tornaAnimat(el, d);
+  }
+}
+
+function tornaAlTerra(el, left, top){
+  el.classList.remove('dragging','tornant');
+  el.style.left = left; el.style.top = top;
+  $('floor').appendChild(el);
+}
+
+function tornaAnimat(el, d, ambWobble){
+  el.classList.add('tornant');
+  el.classList.remove('dragging');
+  el.style.left = d.inici.left + 'px'; el.style.top = d.inici.top + 'px';
+  setTimeout(() => {
+    tornaAlTerra(el, d.left, d.top);
+    if (ambWobble) el.classList.add('wobble');
+  }, 300);
+}
+
+function encert(el, it, z, x, y){
+  el.remove();
+  const s = document.createElement('span');
+  s.innerHTML = it.img ? `<img src="${it.img}" alt="">` : it.e;
+  z.querySelector('.dins').appendChild(s);
+  const n = +z.dataset.n + 1; z.dataset.n = n;
+  z.querySelector('.compt').textContent = `${n}/${z.dataset.total}`;
+  if (n == z.dataset.total) z.classList.add('full');
+  colocats++; actualitzaProgres();
+  so.encert(); espurnes(x, y);
+  diu(ELOGIS[Math.floor(Math.random()*ELOGIS.length)]);
+  if (colocats === ITEMS.length) guanya();
+}
+
+function equivocat(el, it, z, d){
+  errors++;
+  so.error();
+  z.classList.remove('shake'); void z.offsetWidth; z.classList.add('shake');
+  const zona = ZONES.find(q => q.id === it.zona);
+  diu(`Ups! ${it.nom} ${it.pl ? 'van' : 'va'} ${zona.on} 😉`);
+  tornaAnimat(el, d, true);
+}
+
+/* =========================================================
+   EFECTES
+   ========================================================= */
+function espurnes(x, y){
+  const simbols = ['✨','⭐','💖','🌟'];
+  for (let i=0; i<9; i++){
+    const s = document.createElement('span');
+    s.className = 'spark';
+    s.textContent = simbols[i % simbols.length];
+    const a = (Math.PI*2/9)*i, dist = 50 + Math.random()*40;
+    s.style.left = (x-12) + 'px'; s.style.top = (y-12) + 'px';
+    s.style.setProperty('--dx', Math.cos(a)*dist + 'px');
+    s.style.setProperty('--dy', Math.sin(a)*dist + 'px');
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 750);
+  }
+}
+
+function confeti(){
+  const colors = ['#ff8fb8','#c9a7ff','#9be7c4','#ffe08a','#a7d8ff'];
+  for (let i=0; i<80; i++){
+    const c = document.createElement('div');
+    c.className = 'confeti';
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.background = colors[i % colors.length];
+    c.style.animationDuration = (2 + Math.random()*2) + 's';
+    c.style.animationDelay = Math.random()*.8 + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 5000);
+  }
+}
+
+/* =========================================================
+   INICI I FINAL
+   ========================================================= */
+function jugar(){
+  mostra('game');
+  munta();
+  t0 = Date.now();
+  clearInterval(timer);
+  timer = setInterval(() => $('temps').textContent = '⏱ ' + formatTemps(Date.now() - t0), 500);
+}
+
+function guanya(){
+  clearInterval(timer);
+  const ms = Date.now() - t0;
+  const estrelles = errors <= 1 ? 3 : errors <= 4 ? 2 : 1;
+  diu('Ho has aconseguit! 🥳');
+  so.victoria(); confeti();
+
+  // Suma les estrelles al total del Racó
+  try{ const t = JSON.parse(localStorage.getItem('raco_stars')) || 0; localStorage.setItem('raco_stars', JSON.stringify(t + estrelles)); }catch(e){}
+
+  let millor = null;
+  try{
+    millor = +localStorage.getItem('endreca_millor') || null;
+    if (!millor || ms < millor){ localStorage.setItem('endreca_millor', ms); millor = ms; }
+  }catch(e){}
+
+  setTimeout(() => {
+    $('estrelles').innerHTML = [0,1,2].map(i =>
+      `<span class="${i < estrelles ? '' : 'off'}" style="animation-delay:${.2 + i*.25}s">⭐</span>`).join('');
+    $('dades').innerHTML = `⏱ ${formatTemps(ms)} &nbsp;·&nbsp; ${errors === 0 ? 'Cap error! 🏆' : '❌ ' + errors}` +
+      (millor ? `<br><small>Millor temps: ${formatTemps(millor)}</small>` : '');
+    mostra('end');
+    if (estrelles === 3) confeti();
+  }, 1100);
+}
+
+$('btnJugar').onclick = jugar;
+if (location.search.includes('jugar')) jugar();
+$('btnTornarJugar').onclick = jugar;
+$('btnTornar').href = CONFIG.tornarURL;
+$('btnRaco').href = CONFIG.tornarURL;
+$('btnSo').onclick = () => { mut = !mut; $('btnSo').textContent = mut ? '🔇' : '🔊'; };
+</script>
+</body>
+</html>
