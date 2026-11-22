@@ -4,6 +4,7 @@ Portal de jocs per a infants en català, amb estil kawaii.
 Sense anuncis · Sense compres · Sense comptes ni dades personals.
 
 ## Jocs
+- ☁️ Respira amb mi – respiració guiada amb el núvol, el globus o l’osset per aprendre a calmar-se
 - 🧸 Endreça l’Habitació – arrossega cada cosa al seu lloc: roba, llibres, peluixos i joguines
 - 🏨 Hotel Estrelleta – rep hostes kawaii, compleix els seus desitjos i construeix cafeteria, piscina, jardí i escenari
 - 👗 Vestidor Màgic – pentinats, roba, mascotes i reptes
