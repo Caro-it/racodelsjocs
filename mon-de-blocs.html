@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Món de Blocs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: joc kawaii, tendre i segur per a nenes; frases curtes en català
+   IDEA: un món de blocs com els que agraden, però una illa privada on només hi juga ella
+   PICTURE: l'escena 3D a pantalla completa, el personatge al centre
+   COLOUR and TYPE: cel blau clar, gespa verda, rosa #ff7eb6 i lila #7c5cff; Baloo 2
+   LAYOUT: HUD en pastilles a dalt, controls tàctils a baix, targetes centrades */
+:root{--ink:#3b2a5c;--pink:#ff7eb6;--lila:#7c5cff;--sun:#ffd23f}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%;overflow:hidden;background:#bfe8ff;color:var(--ink);font-family:'Baloo 2',system-ui,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hud{position:fixed;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;pointer-events:none;flex-wrap:wrap}
+.hud>div{display:flex;gap:8px;flex-wrap:wrap}
+.pill{pointer-events:auto;background:#fff;color:var(--ink);border:0;border-radius:999px;padding:6px 16px;font:inherit;font-weight:800;font-size:17px;min-height:44px;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 0 #0000001f;cursor:pointer}
+.pill.badge{background:var(--sun);font-size:15px;cursor:default}
+.toast{position:fixed;top:68px;left:50%;transform:translateX(-50%);background:var(--pink);color:#fff;padding:8px 20px;border-radius:999px;font-weight:800;font-size:17px;opacity:0;transition:opacity .3s;pointer-events:none;text-align:center;max-width:92vw;box-shadow:0 4px 0 #d9508f}
+.toast.on{opacity:1}
+#talk{position:fixed;bottom:150px;left:50%;transform:translateX(-50%);display:none;background:var(--lila);color:#fff;box-shadow:0 4px 0 #5a3fd1}
+.ov{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#3b2a5c66;padding:16px}
+.ov.on{display:flex}
+.card{background:#fff;border-radius:26px;padding:22px;max-width:440px;width:100%;box-shadow:0 8px 0 #0000002a;max-height:92vh;overflow:auto}
+.card h1{font-size:40px;line-height:1.05;margin:0 0 2px;color:var(--lila)}
+.card h2{font-size:28px;line-height:1.1;margin:0 0 8px}
+.card p{font-size:17px;margin:6px 0 12px}
+.sub{color:#7b6a9b}
+.ed{justify-content:flex-end;background:none;pointer-events:none}
+.ed .card{pointer-events:auto;max-width:370px}
+.row{margin:10px 0}
+.row b{display:block;font-size:16px;margin-bottom:4px}
+.sw{display:flex;flex-wrap:wrap;gap:8px}
+.sw button{width:44px;height:44px;border-radius:14px;border:3px solid #fff;box-shadow:0 0 0 2px #e4dcf5;cursor:pointer}
+.sw button.txt{width:auto;padding:0 14px;background:#f3efff;font:inherit;font-weight:700;font-size:16px;color:var(--ink)}
+.sw button.sel{box-shadow:0 0 0 4px var(--ink)}
+label{font-weight:800;font-size:16px}
+label small{font-weight:500;color:#7b6a9b}
+input{width:100%;font:inherit;font-size:18px;padding:8px 12px;border:2px solid #d9cfff;border-radius:14px;margin-top:4px;color:var(--ink)}
+input:focus,button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.big{display:block;width:100%;background:var(--lila);color:#fff;border:0;border-radius:18px;padding:12px 20px;font:inherit;font-weight:800;font-size:20px;min-height:52px;cursor:pointer;box-shadow:0 5px 0 #5a3fd1;margin-top:14px}
+.big.alt{background:#f3efff;color:var(--ink);box-shadow:0 5px 0 #d9cfff}
+.opt{display:block;width:100%;margin:8px 0;background:#f3efff;border:2px solid #d9cfff;border-radius:16px;padding:10px 14px;font:inherit;font-size:17px;text-align:left;color:var(--ink);cursor:pointer;min-height:48px}
+.fb{border-radius:14px;padding:10px 14px;font-weight:700;margin:8px 0}
+.fb.ok{background:#dcf7e0;color:#1f6b33}.fb.no{background:#ffe1ec;color:#a3264f}
+.safe{background:#e8f8ff;border-radius:14px;padding:8px 12px;font-size:15px;margin-top:10px}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.badges span{background:var(--sun);border-radius:14px;padding:8px 14px;font-weight:800}
+.badges span.off{background:#eee;color:#999}
+#joy{position:fixed;left:24px;bottom:24px;width:132px;height:132px;border-radius:50%;background:#ffffff59;border:3px solid #ffffffb0;display:none;touch-action:none}
+#knob{position:absolute;left:39px;top:39px;width:54px;height:54px;border-radius:50%;background:#fff;box-shadow:0 3px 0 #0002;pointer-events:none}
+#jump{position:fixed;right:24px;bottom:34px;width:96px;height:96px;border-radius:50%;background:var(--sun);border:0;font:inherit;font-weight:800;font-size:19px;color:var(--ink);display:none;box-shadow:0 6px 0 #d1a400;touch-action:none}
+.touch.playing #joy,.touch.playing #jump{display:block}
+.err{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;font-size:20px}
+@media(max-width:700px){.ed{align-items:flex-end;justify-content:center;padding:10px}.ed .card{max-height:56vh;padding:16px}.card h1{font-size:32px}}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="hud" id="hud" hidden>
+  <div><span class="pill" id="stars">⭐ 0/10</span><span id="badgesHud"></span></div>
+  <div><a class="pill" href="index.html" style="text-decoration:none">Sortir</a><button class="pill" id="btnEd">Vestidor</button><button class="pill" id="btnHelp">Ajuda</button></div>
+</div>
+<div class="toast" id="toast"></div>
+<button class="pill" id="talk">Parlar</button>
+<div id="joy"><div id="knob"></div></div>
+<button id="jump">Salta</button>
+
+<div class="ov ed on" id="ed"><div class="card">
+  <h1>Món de Blocs</h1>
+  <p class="sub">Crea el teu personatge i explora la teva illa.</p>
+  <label for="nick">Àlies <small>(inventat, mai el teu nom real!)</small></label>
+  <input id="nick" maxlength="12" autocomplete="off" value="Estrelleta">
+  <div class="row"><b>Pell</b><div class="sw" data-k="skin"></div></div>
+  <div class="row"><b>Cabell</b><div class="sw" data-k="hair"></div></div>
+  <div class="row"><b>Pentinat</b><div class="sw" data-k="style"></div></div>
+  <div class="row"><b>Samarreta</b><div class="sw" data-k="shirt"></div></div>
+  <div class="row"><b>Pantalons</b><div class="sw" data-k="pants"></div></div>
+  <button class="big" id="go">A jugar!</button>
+  <a class="big alt" href="index.html" style="text-align:center;text-decoration:none">Tornar al Racó</a>
+  <div class="safe">Aquest món és només teu: no hi ha xat i no hi pot entrar ningú desconegut.</div>
+</div></div>
+
+<div class="ov" id="dlg"><div class="card"><h2 id="dName"></h2><p id="dText"></p><div id="dFb"></div><div id="dOpts"></div></div></div>
+
+<div class="ov" id="help"><div class="card">
+  <h2>Com es juga</h2>
+  <p><b>Ordinador:</b> fletxes o W A S D per moure't, espai per saltar, E per parlar. Arrossega amb el ratolí per girar la càmera.</p>
+  <p><b>Tauleta:</b> el cercle de l'esquerra per moure't, el botó groc per saltar. Arrossega el dit per girar la càmera.</p>
+  <p><b>Objectiu:</b> troba les 10 estrelles, parla amb tothom i arriba al Castell dels Núvols pel camí de plataformes.</p>
+  <button class="big" data-close="help">Entesos!</button>
+</div></div>
+
+<div class="ov" id="end"><div class="card">
+  <h2>Has arribat al Castell dels Núvols!</h2>
+  <p id="endText"></p>
+  <p><b>Has après a…</b></p>
+  <div class="badges" id="endBadges"></div>
+  <p id="endHint" class="sub"></p>
+  <button class="big" id="endGo">Continuar jugant</button>
+  <button class="big alt" id="endRestart">Tornar a començar</button>
+</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+{
+const $ = id => document.getElementById(id);
+if (!window.THREE) {
+  document.body.innerHTML = '<div class="err">No s\'ha pogut carregar el joc. Comprova la connexió a internet i torna-ho a provar.</div>';
+} else {
+const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+if (isTouch) document.body.classList.add('touch');
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('mondeblocs_' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('mondeblocs_' + k, JSON.stringify(v)); } catch (e) {} }
+};
+
+// ---------- Escena ----------
+const renderer = new THREE.WebGLRenderer({ canvas: $('c'), antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xbfe8ff);
+scene.fog = new THREE.Fog(0xbfe8ff, 45, 150);
+const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 400);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xb6e3a8, 0.85));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+Object.assign(sun.shadow.camera, { left: -25, right: 25, top: 25, bottom: -25, near: 1, far: 80 });
+scene.add(sun, sun.target);
+
+const mats = {};
+const M = c => mats[c] || (mats[c] = new THREE.MeshLambertMaterial({ color: c }));
+const G = new THREE.BoxGeometry(1, 1, 1);
+const solids = [];
+function box(x, y, z, w, h, d, c, solid = true, parent = scene) {
+  const m = new THREE.Mesh(G, M(c));
+  m.scale.set(w, h, d); m.position.set(x, y, z);
+  m.castShadow = m.receiveShadow = true;
+  parent.add(m);
+  if (solid) solids.push({ x0: x - w / 2, x1: x + w / 2, y0: y - h / 2, y1: y + h / 2, z0: z - d / 2, z1: z + d / 2 });
+  return m;
+}
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+// Aigua i illa
+const water = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshLambertMaterial({ color: 0x6cc6ff }));
+water.rotation.x = -Math.PI / 2; water.position.y = -3; scene.add(water);
+box(0, -0.5, 0, 44, 1, 44, 0x8ee07a);
+box(0, -2, 0, 42, 2, 42, 0xd8a978);
+box(0, 0.02, -10, 3, 0.04, 22, 0xf6e3bd, false);
+function house(x, z, wall, roof) {
+  box(x, 1.5, z, 5, 3, 5, wall);
+  box(x, 3.4, z, 5.8, 0.8, 5.8, roof);
+  box(x, 4.1, z, 4, 0.6, 4, roof);
+  box(x, 0.9, z + 2.52, 1.2, 1.8, 0.06, 0xb07a4f, false);
+  box(x - 1.5, 1.8, z + 2.52, 0.9, 0.9, 0.06, 0xe8f7ff, false);
+  box(x + 1.5, 1.8, z + 2.52, 0.9, 0.9, 0.06, 0xe8f7ff, false);
+}
+house(-12, 8, 0xffd3e4, 0xff7eb6); house(12, 6, 0xfff2b0, 0x7c5cff); house(-12, -10, 0xd3f1ff, 0x4fb0ff);
+function tree(x, z) { box(x, 1, z, 0.8, 2, 0.8, 0xa8754a); box(x, 2.8, z, 2.6, 2, 2.6, 0x5cc96b); box(x, 4.1, z, 1.6, 0.8, 1.6, 0x74de82); }
+[[6, 14], [17, -3], [-17, 3], [9, -14], [17, 17], [-3, 18], [15, -16]].forEach(t => tree(t[0], t[1]));
+const fl = [0xff7eb6, 0xffd23f, 0xffffff, 0x7c5cff];
+for (let i = 0; i < 70; i++) {
+  const x = rnd() * 40 - 20, z = rnd() * 40 - 20;
+  if (Math.abs(x) < 2.5 && z < 2) continue;
+  box(x, 0.15, z, 0.25, 0.3, 0.25, fl[i % 4], false);
+}
+for (let i = 0; i < 14; i++) {
+  const g = new THREE.Group(), x = rnd() * 160 - 80, z = rnd() * 160 - 100, y = 18 + rnd() * 12;
+  box(0, 0, 0, 6, 1.6, 3.5, 0xffffff, false, g); box(1.5, 0.9, 0, 3, 1.2, 2.6, 0xffffff, false, g);
+  g.position.set(x, y, z); scene.add(g);
+}
+// Caixes per pujar a una estrella
+box(-6, 0.5, 13, 1.4, 1, 1.4, 0xffb86b); box(-6, 1, 15, 1.4, 2, 1.4, 0xffa04f); box(-6, 1.5, 17, 1.4, 3, 1.4, 0xff8a3d);
+
+// Camí de plataformes (x, dalt, z, mida)
+const plats = [[0, .5, -24, 3], [0, 1, -28, 2.5], [3, 1.5, -31, 2.5], [6, 2, -34, 2.5], [6, 2.5, -39, 5],
+  [2, 3, -43, 2], [-2, 3.5, -46, 2], [-6, 4, -49, 2], [-6, 4.5, -53, 2], [-6, 5, -58, 5],
+  [-2, 5.5, -62, 1.8], [2, 6, -65, 1.8], [5, 6.5, -68, 1.8], [5, 7, -72, 1.8], [2, 7.5, -75, 1.8], [0, 8, -82, 10]];
+const pc = [0xff9ec7, 0xb9a6ff, 0x9fd8ff, 0xfff09a, 0xa8f0b8];
+plats.forEach((p, i) => box(p[0], p[1] - 0.3, p[2], p[3], 0.6, p[3], pc[i % 5]));
+// Castell
+const top = 8;
+box(0, top + 2, -86.4, 10, 4, 1.2, 0xffd3e4);
+[[-4.4, -86.4], [4.4, -86.4], [-4.4, -77.6], [4.4, -77.6]].forEach(([x, z]) => {
+  box(x, top + 2.5, z, 1.6, 5, 1.6, 0xffc2dc); box(x, top + 5.4, z, 2, 0.8, 2, 0x7c5cff);
+});
+box(0, top + 0.5, -84, 1.6, 1, 1.6, 0xffffff);
+
+// Banderes (punts de control)
+const flagMat = () => new THREE.MeshLambertMaterial({ color: 0xffffff });
+const checkpoints = [{ x: 0, y: 0, z: 6, spawn: true }];
+[4, 9].forEach(i => {
+  const [x, y, z] = plats[i];
+  box(x + 1.8, y + 1.5, z, 0.15, 3, 0.15, 0x8a6a4a, false);
+  const cloth = new THREE.Mesh(G, flagMat()); cloth.scale.set(1.2, 0.8, 0.06); cloth.position.set(x + 2.45, y + 2.55, z); scene.add(cloth);
+  checkpoints.push({ x, y, z, cloth });
+});
+
+// Estrelles
+const shape = new THREE.Shape();
+for (let i = 0; i < 10; i++) { const r = i % 2 ? 0.25 : 0.55, a = i / 10 * Math.PI * 2 + Math.PI / 2; i ? shape.lineTo(Math.cos(a) * r, Math.sin(a) * r) : shape.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+const starGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.18, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 1 }); starGeo.center();
+const starMat = new THREE.MeshLambertMaterial({ color: 0xffd23f, emissive: 0x6b4a00 });
+const starPos = [[8, 1.2, -4], [-6, 1.2, 4], [15, 1.2, 14], [-16, 1.2, -3], [-6, 4.2, 17], [3, 2.6, -31], [-2, 4.6, -46], [-6, 5.6, -53], [2, 7.1, -65], [2, 8.6, -75]];
+const stars = starPos.map(p => { const m = new THREE.Mesh(starGeo, starMat); m.position.set(...p); m.castShadow = true; scene.add(m); return m; });
+const trophy = new THREE.Mesh(starGeo, starMat); trophy.scale.setScalar(2.4); trophy.position.set(0, top + 2.6, -84); scene.add(trophy);
+
+// ---------- Personatges ----------
+function makeAvatar(c) {
+  const g = new THREE.Group(), legs = [], arms = [];
+  [-0.19, 0.19].forEach(x => { const p = new THREE.Group(); p.position.set(x, 0.9, 0); box(0, -0.45, 0, 0.34, 0.9, 0.38, c.pants, false, p); box(0, -0.85, 0.05, 0.36, 0.14, 0.46, 0xffffff, false, p); g.add(p); legs.push(p); });
+  box(0, 1.3, 0, 0.8, 0.8, 0.46, c.shirt, false, g);
+  [-0.55, 0.55].forEach(x => { const p = new THREE.Group(); p.position.set(x, 1.66, 0); box(0, -0.25, 0, 0.28, 0.5, 0.3, c.shirt, false, p); box(0, -0.62, 0, 0.26, 0.26, 0.28, c.skin, false, p); g.add(p); arms.push(p); });
+  box(0, 2.1, 0, 0.78, 0.74, 0.74, c.skin, false, g);
+  [-0.17, 0.17].forEach(x => { box(x, 2.1, 0.375, 0.13, 0.2, 0.02, 0x2b1d3d, false, g); box(x + 0.03, 2.15, 0.39, 0.05, 0.06, 0.01, 0xffffff, false, g); box(x * 1.55, 1.97, 0.375, 0.15, 0.07, 0.02, 0xff9ec7, false, g); });
+  box(0, 1.93, 0.375, 0.12, 0.04, 0.02, 0x8a3b5c, false, g);
+  box(0, 2.53, 0, 0.84, 0.18, 0.82, c.hair, false, g);
+  box(0, 2.28, -0.35, 0.84, 0.5, 0.14, c.hair, false, g);
+  box(0, 2.4, 0.37, 0.84, 0.14, 0.06, c.hair, false, g);
+  if (c.style === 'llarg') { box(0, 1.85, -0.36, 0.84, 0.8, 0.14, c.hair, false, g); [-0.42, 0.42].forEach(x => box(x, 2.0, -0.05, 0.08, 1.0, 0.6, c.hair, false, g)); }
+  if (c.style === 'cues') [-0.52, 0.52].forEach(x => { box(x, 2.2, -0.1, 0.24, 0.24, 0.24, 0xff7eb6, false, g); box(x * 1.2, 1.95, -0.1, 0.24, 0.5, 0.24, c.hair, false, g); });
+  if (c.hat) { box(0, 2.62, 0, 0.9, 0.22, 0.9, c.hat, false, g); box(0, 2.55, 0.5, 0.86, 0.08, 0.4, c.hat, false, g); }
+  if (c.name) { const s = nameTag(c.name); s.position.y = 3.1; g.add(s); }
+  return { g, legs, arms };
+}
+function nameTag(t) {
+  const cv = document.createElement('canvas'); cv.width = 256; cv.height = 64;
+  const x = cv.getContext('2d'); x.font = '800 34px "Baloo 2", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.lineWidth = 6; x.strokeStyle = '#3b2a5c'; x.strokeText(t, 128, 34); x.fillStyle = '#fff'; x.fillText(t, 128, 34);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false }));
+  s.scale.set(2, 0.5, 1); return s;
+}
+
+const opts = {
+  skin: ['#ffe0c7', '#f5c9a3', '#d9a27a', '#a8714f', '#6e4a33'],
+  hair: ['#3b2a20', '#7a4a2a', '#f2c94c', '#ff7eb6', '#7c5cff', '#1a1a1a'],
+  style: ['curt', 'llarg', 'cues'],
+  shirt: ['#ff7eb6', '#7c5cff', '#4fb0ff', '#5cc96b', '#ffd23f', '#ffffff'],
+  pants: ['#4f5bd5', '#3b2a5c', '#ff9f43', '#ff7eb6', '#2ec4b6', '#9a9a9a']
+};
+const look = Object.assign({ skin: opts.skin[0], hair: opts.hair[1], style: 'llarg', shirt: opts.shirt[0], pants: opts.pants[0], name: 'Estrelleta' }, store.get('look', {}));
+$('nick').value = look.name;
+const hex = s => parseInt(s.slice(1), 16);
+let me = null;
+function buildMe() {
+  const rot = me ? me.g.rotation.y : 0;
+  if (me) scene.remove(me.g);
+  me = makeAvatar({ skin: hex(look.skin), hair: hex(look.hair), shirt: hex(look.shirt), pants: hex(look.pants), style: look.style, name: look.name || 'Estrelleta' });
+  me.g.rotation.y = rot; scene.add(me.g);
+}
+document.querySelectorAll('.sw').forEach(w => {
+  const k = w.dataset.k;
+  w.innerHTML = opts[k].map(v => k === 'style' ? `<button class="txt" data-v="${v}">${v === 'curt' ? 'Curt' : v === 'llarg' ? 'Llarg' : 'Cues'}</button>` : `<button data-v="${v}" style="background:${v}" aria-label="${v}"></button>`).join('');
+  const mark = () => w.querySelectorAll('button').forEach(b => b.classList.toggle('sel', b.dataset.v === look[k]));
+  w.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; look[k] = b.dataset.v; mark(); buildMe(); });
+  mark();
+});
+$('nick').addEventListener('input', () => { look.name = $('nick').value.trim().slice(0, 12); buildMe(); });
+
+// NPCs
+const T = isTouch ? 'Mou-te amb el cercle i salta amb el botó groc.' : 'Mou-te amb les fletxes o W A S D i salta amb l\'espai.';
+const npcs = [
+  { name: 'Pip', at: [3, 4], c: { skin: 0xf5c9a3, hair: 0xf2c94c, shirt: 0x5cc96b, pants: 0x3b2a5c, style: 'curt' }, steps: [
+    { t: 'Hola! Benvinguda al Món de Blocs!' },
+    { t: 'Aquí només hi jugues tu. No hi ha xat i no hi pot entrar cap desconegut.' },
+    { t: 'Busca les 10 estrelles i arriba al Castell dels Núvols, al final del camí de plataformes.' },
+    { t: T }] },
+  { name: 'Lia', at: [-2.5, -19], c: { skin: 0xa8714f, hair: 0x1a1a1a, shirt: 0xffd23f, pants: 0x2ec4b6, style: 'cues' }, badge: null, steps: [
+    { t: 'Aquest camí de plataformes és difícil!' },
+    { t: 'Si caus a l\'aigua no passa res: tornes a l\'última bandera.' },
+    { t: 'Equivocar-se és part d\'aprendre. Respira, mira bé on saltes i torna-ho a provar!' }] },
+  { name: 'Desconegut', at: [-7, -4], c: { skin: 0xd9a27a, hair: 0x555555, shirt: 0x8d8d9a, pants: 0x555566, style: 'curt', hat: 0x6b6b78 }, badge: 'seguretat', steps: [
+    { t: 'Hola! Sóc nou per aquí. Vols que siguem amics?' },
+    { t: 'Com et dius de veritat? I a quina escola vas?', o: [
+      ['Et dic el meu nom i la meva escola', 0, 'Ui! El nom real i l\'escola són dades privades. No els diguis mai a algú que no coneixes.'],
+      ['Això és privat, no t\'ho dic', 1, 'Molt bé! Les teves dades són només teves.'],
+      ['Ho explico a un adult de confiança', 1, 'Perfecte! Explicar-ho a un adult sempre és bona idea.']] },
+    { t: 'Si em dones la teva contrasenya, et regalo 1000 monedes!', o: [
+      ['D\'acord, aquí la tens', 0, 'Alerta! Ningú et regala res a canvi de la contrasenya. És un engany.'],
+      ['No! La contrasenya no la dono mai', 1, 'Exacte! La contrasenya només la saps tu i la teva família.']] },
+    { t: 'Envia\'m una foto teva i et faig un regal sorpresa.', o: [
+      ['Va, t\'envio una foto', 0, 'No! Les teves fotos no s\'envien mai a desconeguts.'],
+      ['No, i ho dic a la mama o al papa', 1, 'Molt bé! Si algú et demana fotos, avisa un adult de seguida.']] },
+    { t: 'En realitat sóc un robot d\'entrenament! Has superat la prova de seguretat. Recorda-ho quan juguis a altres llocs.' }] }
+];
+npcs.forEach(n => { const a = makeAvatar({ ...n.c, name: n.name }); a.g.position.set(n.at[0], 0, n.at[1]); scene.add(a.g); n.a = a; });
+
+// ---------- Estat ----------
+const badges = Object.assign({ seguretat: false, perseveranca: false }, store.get('badges', {}));
+const p = new THREE.Vector3(0, 0, 6);
+let vy = 0, onGround = false, coyote = 0, jumpBuf = 0, yaw = 0, pitch = 0.38, facing = Math.PI, phase = 0;
+let mode = 'edit', cp = checkpoints[0], got = 0, falls = 0, goalSeen = false, near = null, dlg = null, step = 0;
+const R = 0.35, H = 1.8, keys = {};
+buildMe();
+
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(() => el.classList.remove('on'), 2300); }
+function drawHud() {
+  $('stars').textContent = `⭐ ${got}/${stars.length}`;
+  $('badgesHud').innerHTML = (badges.seguretat ? '<span class="pill badge">Seguretat</span>' : '') + (badges.perseveranca ? '<span class="pill badge">Perseverança</span>' : '');
+}
+function setMode(m) {
+  mode = m;
+  document.body.classList.toggle('playing', m === 'play');
+  $('hud').hidden = m === 'edit';
+  $('ed').classList.toggle('on', m === 'edit');
+  if (m !== 'play') { $('talk').style.display = 'none'; for (const k in keys) keys[k] = false; resetJoy(); }
+}
+$('go').onclick = () => { look.name = $('nick').value.trim().slice(0, 12) || 'Estrelleta'; store.set('look', look); buildMe(); setMode('play'); yaw = 0; drawHud(); toast('Parla amb en Pip per començar!'); };
+$('btnEd').onclick = () => setMode('edit');
+$('btnHelp').onclick = () => { setMode('help'); $('help').classList.add('on'); };
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => { $(b.dataset.close).classList.remove('on'); setMode('play'); });
+
+// Diàleg
+function openDlg(n) { dlg = n; step = 0; setMode('dialog'); $('dlg').classList.add('on'); renderDlg(); }
+function renderDlg(fb) {
+  const s = dlg.steps[step];
+  $('dName').textContent = dlg.name; $('dText').textContent = s.t;
+  $('dFb').innerHTML = fb ? `<div class="fb ${fb[1] ? 'ok' : 'no'}"></div>` : '';
+  if (fb) $('dFb').firstChild.textContent = fb[0];
+  const answered = fb && fb[1];
+  if (s.o && !answered) $('dOpts').innerHTML = s.o.map((o, i) => `<button class="opt" data-i="${i}"></button>`).join('');
+  else $('dOpts').innerHTML = `<button class="big" data-next="1">${step === dlg.steps.length - 1 ? 'Adéu!' : 'Següent'}</button>`;
+  if (s.o && !answered) $('dOpts').querySelectorAll('.opt').forEach((b, i) => b.textContent = s.o[i][0]);
+}
+$('dOpts').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.next) {
+    if (step < dlg.steps.length - 1) { step++; renderDlg(); return; }
+    $('dlg').classList.remove('on'); setMode('play');
+    if (dlg.badge && !badges[dlg.badge]) { badges[dlg.badge] = true; store.set('badges', badges); drawHud(); toast('Insígnia nova: Seguretat!'); }
+    return;
+  }
+  const o = dlg.steps[step].o[+b.dataset.i]; renderDlg([o[2], o[1]]);
+});
+
+// Final
+function showEnd() {
+  setMode('end');
+  try {
+    const best = +localStorage.getItem('blocs_estrelles') || 0; if (got > best) localStorage.setItem('blocs_estrelles', got);
+    const rs = JSON.parse(localStorage.getItem('raco_stars')) || 0; localStorage.setItem('raco_stars', JSON.stringify(rs + 3));
+  } catch (e) {}
+  badges.perseveranca = true; store.set('badges', badges); drawHud();
+  $('endText').textContent = `Has trobat ${got} de ${stars.length} estrelles. ` + (falls ? `Has caigut ${falls} ${falls === 1 ? 'vegada' : 'vegades'} i no t'has rendit!` : 'I sense caure ni una vegada!');
+  $('endBadges').innerHTML = '<span>Perseverança: no rendir-me</span>' + `<span class="${badges.seguretat ? '' : 'off'}">Seguretat: protegir les meves dades</span>`;
+  $('endHint').textContent = badges.seguretat ? '' : 'Pista: parla amb el Desconegut del barret gris per guanyar la insígnia de Seguretat.';
+  $('end').classList.add('on');
+}
+$('endGo').onclick = () => { $('end').classList.remove('on'); setMode('play'); };
+$('endRestart').onclick = () => {
+  $('end').classList.remove('on'); stars.forEach(s => s.visible = true); got = 0; falls = 0; goalSeen = false;
+  cp = checkpoints[0]; checkpoints.forEach(c => c.cloth && c.cloth.material.color.set(0xffffff));
+  p.set(0, 0, 6); vy = 0; drawHud(); setMode('play');
+};
+
+// ---------- Controls ----------
+const typing = e => e.target.tagName === 'INPUT';
+addEventListener('keydown', e => {
+  if (typing(e)) return;
+  keys[e.code] = true;
+  if (e.code === 'Space') { jumpBuf = 0.15; e.preventDefault(); }
+  if ((e.code === 'KeyE' || e.code === 'Enter') && mode === 'play' && near) openDlg(near);
+});
+addEventListener('keyup', e => { keys[e.code] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+$('talk').onclick = () => near && openDlg(near);
+
+let drag = null;
+$('c').addEventListener('pointerdown', e => { drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; });
+addEventListener('pointermove', e => {
+  if (!drag || drag.id !== e.pointerId) return;
+  yaw -= (e.clientX - drag.x) * 0.006; pitch = Math.min(1.1, Math.max(0.1, pitch + (e.clientY - drag.y) * 0.004));
+  drag.x = e.clientX; drag.y = e.clientY;
+});
+addEventListener('pointerup', e => { if (drag && drag.id === e.pointerId) drag = null; });
+
+let jx = 0, jy = 0, joyId = null;
+const joy = $('joy'), knob = $('knob');
+function resetJoy() { jx = jy = 0; joyId = null; knob.style.transform = ''; }
+joy.addEventListener('pointerdown', e => { joyId = e.pointerId; joy.setPointerCapture(e.pointerId); moveJoy(e); });
+joy.addEventListener('pointermove', e => { if (e.pointerId === joyId) moveJoy(e); });
+joy.addEventListener('pointerup', resetJoy); joy.addEventListener('pointercancel', resetJoy);
+function moveJoy(e) {
+  const r = joy.getBoundingClientRect(); let dx = e.clientX - r.left - r.width / 2, dy = e.clientY - r.top - r.height / 2;
+  const l = Math.hypot(dx, dy), m = 44; if (l > m) { dx *= m / l; dy *= m / l; }
+  jx = dx / m; jy = dy / m; knob.style.transform = `translate(${dx}px,${dy}px)`;
+}
+$('jump').addEventListener('pointerdown', e => { e.preventDefault(); jumpBuf = 0.15; });
+
+// ---------- Física ----------
+function hits() { return solids.filter(s => p.x - R < s.x1 && p.x + R > s.x0 && p.z - R < s.z1 && p.z + R > s.z0 && p.y < s.y1 && p.y + H > s.y0); }
+function resolveH(axis, v) {
+  for (const s of hits()) {
+    if (s.y1 - p.y < 0.4 && s.y1 - p.y > 0) { p.y = s.y1; continue; }
+    if (axis === 'x') p.x = v > 0 ? s.x0 - R - 0.001 : s.x1 + R + 0.001;
+    else p.z = v > 0 ? s.z0 - R - 0.001 : s.z1 + R + 0.001;
+  }
+}
+function resolveV() {
+  for (const s of hits()) {
+    if (vy <= 0) { p.y = s.y1; vy = 0; onGround = true; } else { p.y = s.y0 - H - 0.001; vy = 0; }
+  }
+}
+
+// ---------- Bucle ----------
+const clock = new THREE.Clock(), tgt = new THREE.Vector3(), want = new THREE.Vector3();
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  if (mode === 'play') {
+    const k = c => keys[c] ? 1 : 0;
+    let f = k('KeyW') + k('ArrowUp') - k('KeyS') - k('ArrowDown') - jy;
+    let r = k('KeyD') + k('ArrowRight') - k('KeyA') - k('ArrowLeft') + jx;
+    let mx = -Math.sin(yaw) * f + Math.cos(yaw) * r, mz = -Math.cos(yaw) * f - Math.sin(yaw) * r;
+    const len = Math.hypot(mx, mz); if (len > 1) { mx /= len; mz /= len; }
+    const sp = 6.2;
+    p.x += mx * sp * dt; resolveH('x', mx);
+    p.z += mz * sp * dt; resolveH('z', mz);
+    coyote = onGround ? 0.12 : coyote - dt; jumpBuf -= dt;
+    if (jumpBuf > 0 && coyote > 0) { vy = 9.6; jumpBuf = 0; coyote = 0; }
+    vy -= 25 * dt; onGround = false; p.y += vy * dt; resolveV();
+    if (len > 0.1) { const a = Math.atan2(mx, mz); let d = a - facing; d = Math.atan2(Math.sin(d), Math.cos(d)); facing += d * Math.min(1, dt * 12); }
+    const moving = Math.min(1, len) * (onGround ? 1 : 0.3); phase += dt * 11 * moving;
+    me.legs[0].rotation.x = Math.sin(phase) * 0.7 * moving; me.legs[1].rotation.x = -me.legs[0].rotation.x;
+    me.arms[0].rotation.x = -me.legs[0].rotation.x * 0.8; me.arms[1].rotation.x = me.legs[0].rotation.x * 0.8;
+    if (!onGround) { me.arms[0].rotation.z = -0.6; me.arms[1].rotation.z = 0.6; } else { me.arms[0].rotation.z = me.arms[1].rotation.z = 0; }
+    if (p.y < -4) {
+      p.set(cp.x, cp.y + 0.05, cp.z); vy = 0; falls++;
+      toast(['Torna-ho a provar!', 'Tu pots!', 'Una altra vegada!', 'Respira i salta!'][falls % 4]);
+    }
+    stars.forEach(s => { if (s.visible && s.position.distanceTo(tgt.set(p.x, p.y + 0.9, p.z)) < 1.3) { s.visible = false; got++; drawHud(); toast(got === stars.length ? 'Totes les estrelles! Ets una crack!' : `Estrella! ${got}/${stars.length}`); } });
+    checkpoints.forEach(c => { if (c !== cp && !c.spawn && Math.hypot(p.x - c.x, p.z - c.z) < 2.6 && Math.abs(p.y - c.y) < 1) { cp = c; c.cloth.material.color.set(0xff7eb6); toast('Bandera! Si caus, tornaràs aquí.'); } });
+    if (!goalSeen && Math.hypot(p.x - trophy.position.x, p.z - trophy.position.z) < 2 && p.y > top - 0.5) { goalSeen = true; showEnd(); }
+    near = null; let best = 3;
+    npcs.forEach(n => { const d = Math.hypot(p.x - n.at[0], p.z - n.at[1]); if (d < best) { best = d; near = n; } });
+    const tb = $('talk');
+    if (near) { tb.style.display = 'inline-flex'; tb.textContent = `Parlar amb ${near.name}` + (isTouch ? '' : ' (E)'); } else tb.style.display = 'none';
+  }
+  me.g.position.copy(p);
+  me.g.rotation.y = mode === 'edit' ? me.g.rotation.y + dt * 0.6 : facing;
+  npcs.forEach((n, i) => {
+    n.a.g.position.y = Math.abs(Math.sin(t * 2 + i)) * 0.08;
+    const d = Math.hypot(p.x - n.at[0], p.z - n.at[1]);
+    n.a.g.rotation.y = d < 6 ? Math.atan2(p.x - n.at[0], p.z - n.at[1]) : Math.sin(t * 0.5 + i) * 0.8;
+  });
+  stars.forEach((s, i) => { s.rotation.y = t * 2 + i; s.position.y = starPos[i][1] + Math.sin(t * 2 + i) * 0.15; });
+  trophy.rotation.y = t * 1.2;
+
+  if (mode === 'edit') {
+    const wide = innerWidth > 700;
+    tgt.set(p.x + (wide ? 1.1 : 0), p.y + (wide ? 1.4 : 0.6), p.z);
+    want.set(p.x + (wide ? 1.1 : 0), p.y + 1.8, p.z + 5.2);
+  } else {
+    tgt.set(p.x, p.y + 1.6, p.z);
+    const dist = 9;
+    want.set(p.x + Math.sin(yaw) * Math.cos(pitch) * dist, p.y + 1.6 + Math.sin(pitch) * dist, p.z + Math.cos(yaw) * Math.cos(pitch) * dist);
+  }
+  camera.position.lerp(want, 1 - Math.exp(-8 * dt));
+  camera.lookAt(tgt);
+  sun.position.set(p.x + 15, p.y + 30, p.z + 10); sun.target.position.copy(p);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+setMode('edit'); drawHud(); camera.position.set(0, 2, 12);
+requestAnimationFrame(frame);
+}
+}
+</script>
+</body>
+</html>
