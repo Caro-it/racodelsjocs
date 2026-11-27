@@ -157,7 +157,7 @@ h1{font-size:clamp(34px,7vw,62px);color:var(--rosa);line-height:1.05;
 
 <!-- PANTALLA FINAL -->
 <section id="end" class="screen hidden">
-  <div class="big-emoji">🏡</div>
+  <img class="big-emoji" src="img/endreca/habitacio.webp" alt="" style="width:clamp(150px,34vw,260px);height:auto">
   <h1>Habitació<br>endreçada!</h1>
   <div class="estrelles" id="estrelles"></div>
   <div class="dades" id="dades"></div>
@@ -453,7 +453,7 @@ function guanya(){
 
   setTimeout(() => {
     $('estrelles').innerHTML = [0,1,2].map(i =>
-      `<span class="${i < estrelles ? '' : 'off'}" style="animation-delay:${.2 + i*.25}s">⭐</span>`).join('');
+      `<span class="${i < estrelles ? '' : 'off'}" style="animation-delay:${.2 + i*.25}s"><img src="img/ui/estrella.webp" alt="" style="width:1em;height:1em;display:block"></span>`).join('');
     $('dades').innerHTML = `⏱ ${formatTemps(ms)} &nbsp;·&nbsp; ${errors === 0 ? 'Cap error! 🏆' : '❌ ' + errors}` +
       (millor ? `<br><small>Millor temps: ${formatTemps(millor)}</small>` : '');
     mostra('end');
